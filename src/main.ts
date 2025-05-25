@@ -7,11 +7,15 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { TournamentComponent } from './app/components/tournament/tournament.component';
 import { MatchComponent } from './app/components/match/match.component';
 import { PlayerStatsComponent } from './app/components/player-stats/player-stats.component';
+import { TournamentListComponent } from './app/components/tournament-list/tournament-list.component';
+import { TournamentFormComponent } from './app/components/tournament-form/tournament-form.component';
 
 const routes: Routes = [
   { path: '', component: TournamentComponent },
   { path: 'match/:id', component: MatchComponent },
-  { path: 'stats', component: PlayerStatsComponent }
+  { path: 'stats', component: PlayerStatsComponent },
+  { path: 'tournaments', component: TournamentListComponent },
+  { path: 'tournaments/add', component: TournamentFormComponent }
 ];
 
 @Component({
@@ -24,6 +28,7 @@ const routes: Routes = [
         <h1>CodeBlaze Cricket Tournament Tracker</h1>
         <nav class="main-navigation">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Tournament</a>
+          <a routerLink="/tournaments" routerLinkActive="active">Manage Tournaments</a>
           <a routerLink="/stats" routerLinkActive="active">Player Stats</a>
         </nav>
       </header>
@@ -61,7 +66,7 @@ const routes: Routes = [
     }
     
     .app-header h1 {
-      margin: 0 0 1rem;
+      margin: 0;
       font-size: 1.5rem;
       color: white;
     }
@@ -105,10 +110,18 @@ const routes: Routes = [
     @media (max-width: 768px) {
       .app-header {
         padding: 0.75rem;
+        flex-direction: column;
+        text-align: center;
       }
       
       .app-header h1 {
         font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      
+      .main-navigation {
+        flex-wrap: wrap;
+        justify-content: center;
       }
       
       main {
