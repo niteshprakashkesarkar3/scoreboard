@@ -8,68 +8,78 @@ import { PlayerService } from '../../services/player.service';
 import { TeamService } from '../../services/team.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
+import { InputComponent } from '../shared/input/input.component';
+import { SelectComponent } from '../shared/select/select.component';
 
 @Component({
   selector: 'app-player-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    FormLayoutComponent, 
+    FormFieldComponent,
+    InputComponent,
+    SelectComponent
+  ],
   template: `
     <form #playerForm="ngForm">
       <app-form-layout
         itemName="Player"
         [isEditMode]="isEditMode"
-        [submitDisabled]="playerForm.invalid! || player.roles.length === 0"
+        [submitDisabled]="!playerForm.form.valid || player.roles.length === 0"
         (onSubmit)="onSubmit()"
         (onCancel)="onCancel()"
       >
         <app-form-field
           id="id"
           label="Player ID"
-          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          [showError]="!!(id.invalid && (id.dirty || id.touched))"
           errorMessage="Player ID is required"
         >
-          <input 
-            type="text" 
-            id="id" 
-            name="id" 
-            [(ngModel)]="player.id" 
-            required
+          <app-input
+            id="id"
+            name="id"
+            [(ngModel)]="player.id"
+            [required]="true"
             [readonly]="isEditMode"
-            #id="ngModel">
+            #id="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="name"
           label="Player Name"
-          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          [showError]="!!(name.invalid && (name.dirty || name.touched))"
           errorMessage="Player name is required"
         >
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            [(ngModel)]="player.name" 
-            required
-            #name="ngModel">
+          <app-input
+            id="name"
+            name="name"
+            [(ngModel)]="player.name"
+            [required]="true"
+            #name="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="teamId"
           label="Team"
-          [showError]="teamId.invalid! && (teamId.dirty! || teamId.touched!)"
+          [showError]="!!(teamId.invalid && (teamId.dirty || teamId.touched))"
           errorMessage="Team is required"
         >
-          <select 
-            id="teamId" 
-            name="teamId" 
-            [(ngModel)]="player.teamId" 
-            required
-            #teamId="ngModel">
-            <option value="">Select Team</option>
+          <app-select
+            id="teamId"
+            name="teamId"
+            [(ngModel)]="player.teamId"
+            [required]="true"
+            placeholder="Select Team"
+            #teamId="ngModel"
+          >
             <option *ngFor="let team of teams" [value]="team.id">
               {{ team.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
 
         <app-form-field
@@ -93,19 +103,21 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
         <app-form-field
           id="status"
           label="Status"
-          [showError]="status.invalid! && (status.dirty! || status.touched!)"
+          [showError]="!!(status.invalid && (status.dirty || status.touched))"
           errorMessage="Status is required"
         >
-          <select 
-            id="status" 
-            name="status" 
-            [(ngModel)]="player.status" 
-            required
-            #status="ngModel">
+          <app-select
+            id="status"
+            name="status"
+            [(ngModel)]="player.status"
+            [required]="true"
+            placeholder="Select Status"
+            #status="ngModel"
+          >
             <option value="playing">Playing</option>
             <option value="injured">Injured</option>
             <option value="not playing">Not Playing</option>
-          </select>
+          </app-select>
         </app-form-field>
       </app-form-layout>
     </form>
