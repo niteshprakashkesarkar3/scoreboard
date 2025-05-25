@@ -8,13 +8,21 @@ import { Player } from '../../models/player.model';
 import { InningsService } from '../../services/innings.service';
 import { BallService } from '../../services/ball.service';
 import { PlayerService } from '../../services/player.service';
+import { TeamService } from '../../services/team.service';
 import { ButtonComponent } from '../shared/button/button.component';
 import { SelectComponent } from '../shared/select/select.component';
+import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component';
 
 @Component({
   selector: 'app-innings-scoring',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonComponent, SelectComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    ButtonComponent, 
+    SelectComponent,
+    WicketDialogComponent
+  ],
   template: `
     <div class="innings-scoring-container">
       <div class="scoring-header">
@@ -96,6 +104,13 @@ import { SelectComponent } from '../shared/select/select.component';
         </div>
       </div>
     </div>
+
+    <app-wicket-dialog
+      *ngIf="showingWicketDialog"
+      [fieldingTeam]="availableBowlers"
+      (onConfirm)="handleWicket($event)"
+      (onCancel)="hideWicketDialog()"
+    ></app-wicket-dialog>
   `,
   styles: [`
     .innings-scoring-container {
@@ -213,11 +228,13 @@ export class InningsScoringComponent implements OnInit {
   currentBowler = '';
   availableBatsmen: Player[] = [];
   availableBowlers: Player[] = [];
+  showingWicketDialog = false;
 
   constructor(
     private inningsService: InningsService,
     private ballService: BallService,
     private playerService: PlayerService,
+    private teamService: TeamService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -257,8 +274,8 @@ export class InningsScoringComponent implements OnInit {
   }
 
   getBattingTeamName(): string {
-    // Implementation needed
-    return '';
+    const team = this.teamService.teams$.value.find(t => t.id === this.innings.batting_team_id);
+    return team ? team.name : '';
   }
 
   getBallDisplay(ball: Ball): string {
@@ -271,6 +288,11 @@ export class InningsScoringComponent implements OnInit {
   }
 
   addRuns(runs: number): void {
+    if (!this.currentBatsman || !this.currentBowler) {
+      alert('Please select both batsman and bowler');
+      return;
+    }
+
     const ball: Ball = {
       id: `${this.innings.id}_${this.currentOver}_${this.currentOverBalls.length + 1}`,
       innings_id: this.innings.id,
@@ -290,18 +312,82 @@ export class InningsScoringComponent implements OnInit {
   }
 
   addExtra(type: BallOutcome): void {
-    // Implementation needed
+    if (!this.currentBowler) {
+      alert('Please select a bowler');
+      return;
+    }
+
+    const ball: Ball = {
+      id: `${this.innings.id}_${this.currentOver}_${this.currentOverBalls.length + 1}`,
+      innings_id: this.innings.id,
+      over_number: this.currentOver,
+      ball_number: this.currentOverBalls.length + 1,
+      batsman_id: this.currentBatsman,
+      bowler_id: this.currentBowler,
+      runs: 1, // Default extra run
+      extras: 1,
+      outcome: type,
+      timestamp: new Date()
+    };
+
+    this.ballService.addBall(ball);
+    this.updateInningsScore(1);
+    
+    // Don't increment ball count for wides and no-balls
+    if (type === 'wide' || type === 'no_ball') {
+      this.currentOverBalls = this.currentOverBalls.slice(0, -1);
+    }
+    
+    this.loadCurrentOver();
   }
 
   showWicketDialog(): void {
-    // Implementation needed
+    if (!this.currentBatsman || !this.currentBowler) {
+      alert('Please select both batsman and bowler');
+      return;
+    }
+    this.showingWicketDialog = true;
+  }
+
+  hideWicketDialog(): void {
+    this.showingWicketDialog = false;
+  }
+
+  handleWicket(details: WicketDetails): void {
+    const ball: Ball = {
+      id: `${this.innings.id}_${this.currentOver}_${this.currentOverBalls.length + 1}`,
+      innings_id: this.innings.id,
+      over_number: this.currentOver,
+      ball_number: this.currentOverBalls.length + 1,
+      batsman_id: this.currentBatsman,
+      bowler_id: this.currentBowler,
+      runs: details.runs || 0,
+      extras: 0,
+      outcome: 'wicket',
+      wicket_type: details.type,
+      fielder_id: details.fielderId,
+      timestamp: new Date()
+    };
+
+    this.ballService.addBall(ball);
+    this.innings.wickets++;
+    this.updateInningsScore(details.runs || 0);
+    this.hideWicketDialog();
+    this.loadCurrentOver();
+    this.currentBatsman = ''; // Reset batsman after wicket
   }
 
   undoLastBall(): void {
     if (this.currentOverBalls.length > 0) {
       const lastBall = this.currentOverBalls[this.currentOverBalls.length - 1];
+      
+      // Revert wicket if the last ball was a wicket
+      if (lastBall.outcome === 'wicket') {
+        this.innings.wickets--;
+      }
+      
       this.ballService.deleteBall(lastBall.id);
-      this.updateInningsScore(-lastBall.runs);
+      this.updateInningsScore(-(lastBall.runs + lastBall.extras));
       this.loadCurrentOver();
     }
   }
@@ -310,7 +396,7 @@ export class InningsScoringComponent implements OnInit {
     if (this.currentOverBalls.length === 6) {
       this.currentOver++;
       this.currentOverBalls = [];
-      // Implement logic to switch bowler and possibly batsmen
+      this.currentBowler = ''; // Reset bowler for new over
     }
   }
 
