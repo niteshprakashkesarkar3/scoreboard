@@ -4,6 +4,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { provideRouter, Routes } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
+import { DashboardComponent } from './app/components/dashboard/dashboard.component';
 import { TournamentListComponent } from './app/components/tournament-list/tournament-list.component';
 import { TournamentFormComponent } from './app/components/tournament-form/tournament-form.component';
 import { GroupListComponent } from './app/components/group-list/group-list.component';
@@ -18,7 +19,8 @@ import { MatchListComponent } from './app/components/match-list/match-list.compo
 import { MatchFormComponent } from './app/components/match-form/match-form.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/tournaments', pathMatch: 'full' },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent },
   { path: 'tournaments', component: TournamentListComponent },
   { path: 'tournaments/add', component: TournamentFormComponent },
   { path: 'tournaments/edit/:id', component: TournamentFormComponent },
@@ -33,7 +35,7 @@ const routes: Routes = [
   { path: 'stadiums/edit/:id', component: StadiumFormComponent },
   { path: 'players', component: PlayerListComponent },
   { path: 'players/add', component: PlayerFormComponent },
-  { path: 'players/edit/:id', component: PlayerFormComponent }, 
+  { path: 'players/edit/:id', component: PlayerFormComponent },
   { path: 'matches', component: MatchListComponent },
   { path: 'matches/add', component: MatchFormComponent },
   { path: 'matches/edit/:id', component: MatchFormComponent }
@@ -48,6 +50,7 @@ const routes: Routes = [
       <header class="app-header">
         <h1>ScoreBoard</h1>
         <nav class="main-navigation">
+          <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
           <a routerLink="/tournaments" routerLinkActive="active">Tournaments</a>
           <a routerLink="/groups" routerLinkActive="active">Groups</a>
           <a routerLink="/teams" routerLinkActive="active">Teams</a>
