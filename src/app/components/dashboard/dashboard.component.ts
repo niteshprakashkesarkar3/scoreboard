@@ -6,6 +6,7 @@ import { Tournament } from '../../models/tournament.model';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
 import { StadiumService } from '../../services/stadium.service';
+import { GroupService } from '../../services/group.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -243,7 +244,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(
     private dashboardService: DashboardService,
-    private stadiumService: StadiumService
+    private stadiumService: StadiumService,
+    private groupService: GroupService
   ) {}
 
   ngOnInit(): void {
@@ -265,7 +267,14 @@ export class DashboardComponent implements OnInit {
   }
 
   getGroupName(id: string): string {
-    return id; // You might want to implement group name lookup
+    let name = 'Unknown Group';
+    this.groupService.groups$.subscribe(groups => {
+      const group = groups.find(g => g.id === id);
+      if (group) {
+        name = group.name;
+      }
+    });
+    return name;
   }
 
   getStadiumName(id: string): string {
