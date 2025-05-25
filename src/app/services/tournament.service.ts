@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Tournament } from '../models/tournament.model';
-import * as fs from 'fs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +8,7 @@ import * as fs from 'fs';
 export class TournamentService {
   private tournamentsSubject = new BehaviorSubject<Tournament[]>([]);
   public tournaments$ = this.tournamentsSubject.asObservable();
-  private dataFile = 'data/tournaments.json';
+  private readonly STORAGE_KEY = 'tournaments';
 
   constructor() {
     this.loadTournaments();
@@ -17,8 +16,15 @@ export class TournamentService {
 
   private loadTournaments(): void {
     try {
-      const data = fs.readFileSync(this.dataFile, 'utf8');
-      const tournaments = JSON.parse(data);
+      const data = localStorage.getItem(this.STORAGE_KEY);
+      const tournaments = data ? JSON.parse(data) : [];
+      
+      // Convert string dates back to Date objects
+      tournaments.forEach((t: Tournament) => {
+        t.startDate = new Date(t.startDate);
+        t.endDate = new Date(t.endDate);
+      });
+      
       this.tournamentsSubject.next(tournaments);
     } catch (error) {
       console.error('Error loading tournaments:', error);
@@ -28,10 +34,7 @@ export class TournamentService {
 
   private saveTournaments(tournaments: Tournament[]): void {
     try {
-      if (!fs.existsSync('data')) {
-        fs.mkdirSync('data');
-      }
-      fs.writeFileSync(this.dataFile, JSON.stringify(tournaments, null, 2));
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(tournaments));
       this.tournamentsSubject.next(tournaments);
     } catch (error) {
       console.error('Error saving tournaments:', error);
