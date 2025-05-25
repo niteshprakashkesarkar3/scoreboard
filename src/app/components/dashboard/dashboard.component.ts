@@ -125,12 +125,12 @@ import { Team } from '../../models/team.model';
 
     .cards-container::-webkit-scrollbar {
       height: 8px;
-      background: rgba(255,255,255, 0.2);
+      background: #f0f0f0;
       border-radius: 4px;
     }
 
     .cards-container::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255, 0.2);
+      background: rgba(255,255,255, 0.5);
       border-radius: 4px;
     }
 
