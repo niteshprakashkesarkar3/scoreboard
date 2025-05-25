@@ -17,20 +17,17 @@ import { Team } from '../../models/team.model';
           <h2>Tournaments</h2>
           <a routerLink="/tournaments" class="view-all">View All</a>
         </div>
-        <div class="scroll-container">
-          <div class="cards-container">
-            <div *ngFor="let tournament of tournaments" class="card tournament-card">
-              <h3>{{ tournament.name }}</h3>
-              <div class="card-content">
-                <p>Start: {{ tournament.startDate | date }}</p>
-                <p>End: {{ tournament.endDate | date }}</p>
-                <span class="status-badge" [class]="tournament.status">
-                  {{ tournament.status }}
-                </span>
-              </div>
+        <div class="cards-container">
+          <div *ngFor="let tournament of tournaments" class="card tournament-card">
+            <h3>{{ tournament.name }}</h3>
+            <div class="card-content">
+              <p>Start: {{ tournament.startDate | date }}</p>
+              <p>End: {{ tournament.endDate | date }}</p>
+              <span class="status-badge" [class]="tournament.status">
+                {{ tournament.status }}
+              </span>
             </div>
           </div>
-          <div class="scroll-fade-right"></div>
         </div>
       </section>
 
@@ -39,21 +36,18 @@ import { Team } from '../../models/team.model';
           <h2>Upcoming Matches</h2>
           <a routerLink="/matches" class="view-all">View All</a>
         </div>
-        <div class="scroll-container">
-          <div class="cards-container">
-            <div *ngFor="let match of matches" class="card match-card">
-              <div class="card-content">
-                <div class="teams">
-                  <span>{{ getTeamName(match.team1_id) }}</span>
-                  <span class="vs">vs</span>
-                  <span>{{ getTeamName(match.team2_id) }}</span>
-                </div>
-                <p class="venue">{{ getStadiumName(match.stadium_id) }}</p>
-                <p class="date">{{ match.scheduled_at | date:'medium' }}</p>
+        <div class="cards-container">
+          <div *ngFor="let match of matches" class="card match-card">
+            <div class="card-content">
+              <div class="teams">
+                <span>{{ getTeamName(match.team1_id) }}</span>
+                <span class="vs">vs</span>
+                <span>{{ getTeamName(match.team2_id) }}</span>
               </div>
+              <p class="venue">{{ getStadiumName(match.stadium_id) }}</p>
+              <p class="date">{{ match.scheduled_at | date:'medium' }}</p>
             </div>
           </div>
-          <div class="scroll-fade-right"></div>
         </div>
       </section>
 
@@ -62,17 +56,14 @@ import { Team } from '../../models/team.model';
           <h2>Teams</h2>
           <a routerLink="/teams" class="view-all">View All</a>
         </div>
-        <div class="scroll-container">
-          <div class="cards-container">
-            <div *ngFor="let team of teams" class="card team-card">
-              <h3>{{ team.name }}</h3>
-              <div class="card-content">
-                <p>Tournament: {{ getTournamentName(team.tournamentId) }}</p>
-                <p>Group: {{ getGroupName(team.groupId) }}</p>
-              </div>
+        <div class="cards-container">
+          <div *ngFor="let team of teams" class="card team-card">
+            <h3>{{ team.name }}</h3>
+            <div class="card-content">
+              <p>Tournament: {{ getTournamentName(team.tournamentId) }}</p>
+              <p>Group: {{ getGroupName(team.groupId) }}</p>
             </div>
           </div>
-          <div class="scroll-fade-right"></div>
         </div>
       </section>
     </div>
@@ -110,28 +101,21 @@ import { Team } from '../../models/team.model';
       font-weight: 500;
     }
 
-    .scroll-container {
-      position: relative;
-      overflow: hidden;
-    }
-
     .cards-container {
       display: flex;
       overflow-x: auto;
       gap: 1rem;
       padding: 0.5rem;
       padding-bottom: 1rem;
-      margin-bottom: -1rem;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
       scrollbar-width: thin;
       scrollbar-color: #1B5E20 #f0f0f0;
-      mask-image: linear-gradient(to right, black 90%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
     }
 
     .cards-container::-webkit-scrollbar {
       height: 8px;
+      width: 8px;
     }
 
     .cards-container::-webkit-scrollbar-track {
@@ -146,16 +130,6 @@ import { Team } from '../../models/team.model';
 
     .cards-container::-webkit-scrollbar-thumb:hover {
       background: #154c1a;
-    }
-
-    .scroll-fade-right {
-      position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      width: 50px;
-      background: linear-gradient(to right, transparent, white);
-      pointer-events: none;
     }
 
     .card {
@@ -248,11 +222,6 @@ import { Team } from '../../models/team.model';
 
       .card {
         flex: 0 0 250px;
-      }
-
-      .cards-container {
-        mask-image: linear-gradient(to right, black 85%, transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
       }
     }
   `]
