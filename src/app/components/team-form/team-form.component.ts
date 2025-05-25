@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Team } from '../../models/team.model';
 import { Tournament } from '../../models/tournament.model';
@@ -8,17 +8,28 @@ import { Group } from '../../models/group.model';
 import { TeamService } from '../../services/team.service';
 import { TournamentService } from '../../services/tournament.service';
 import { GroupService } from '../../services/group.service';
+import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
+import { FormFieldComponent } from '../shared/form-field/form-field.component';
 
 @Component({
   selector: 'app-team-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
   template: `
-    <div class="team-form-container">
-      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Team</h2>
-      <form (ngSubmit)="onSubmit()" #form="ngForm">
-        <div class="form-group">
-          <label for="id">Team ID</label>
+    <form #teamForm="ngForm">
+      <app-form-layout
+        itemName="Team"
+        [isEditMode]="isEditMode"
+        [submitDisabled]="teamForm.invalid"
+        (onSubmit)="onSubmit()"
+        (onCancel)="onCancel()"
+      >
+        <app-form-field
+          id="id"
+          label="Team ID"
+          [showError]="id.invalid && (id.dirty || id.touched)"
+          errorMessage="Team ID is required"
+        >
           <input 
             type="text" 
             id="id" 
@@ -27,13 +38,14 @@ import { GroupService } from '../../services/group.service';
             required
             [readonly]="isEditMode"
             #id="ngModel">
-          <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
-            Team ID is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="name">Team Name</label>
+        <app-form-field
+          id="name"
+          label="Team Name"
+          [showError]="name.invalid && (name.dirty || name.touched)"
+          errorMessage="Team name is required"
+        >
           <input 
             type="text" 
             id="name" 
@@ -41,13 +53,14 @@ import { GroupService } from '../../services/group.service';
             [(ngModel)]="team.name" 
             required
             #name="ngModel">
-          <div class="error" *ngIf="name.invalid && (name.dirty || name.touched)">
-            Team name is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="tournamentId">Tournament</label>
+        <app-form-field
+          id="tournamentId"
+          label="Tournament"
+          [showError]="tournamentId.invalid && (tournamentId.dirty || tournamentId.touched)"
+          errorMessage="Tournament is required"
+        >
           <select 
             id="tournamentId" 
             name="tournamentId" 
@@ -60,13 +73,14 @@ import { GroupService } from '../../services/group.service';
               {{ tournament.name }}
             </option>
           </select>
-          <div class="error" *ngIf="tournamentId.invalid && (tournamentId.dirty || tournamentId.touched)">
-            Tournament is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="groupId">Group</label>
+        <app-form-field
+          id="groupId"
+          label="Group"
+          [showError]="groupId.invalid && (groupId.dirty || groupId.touched)"
+          errorMessage="Group is required"
+        >
           <select 
             id="groupId" 
             name="groupId" 
@@ -78,90 +92,14 @@ import { GroupService } from '../../services/group.service';
               {{ group.name }}
             </option>
           </select>
-          <div class="error" *ngIf="groupId.invalid && (groupId.dirty || groupId.touched)">
-            Group is required
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Team</button>
-          <button type="button" (click)="onCancel()">Cancel</button>
-        </div>
-      </form>
-    </div>
-  `,
-  styles: [`
-    .team-form-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    input[readonly] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
-    .error {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
-      background-color: #1B5E20;
-      color: white;
-    }
-
-    button[type="submit"]:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    button[type="button"] {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-  `]
+        </app-form-field>
+      </app-form-layout>
+    </form>
+  `
 })
 export class TeamFormComponent implements OnInit {
+  @ViewChild('teamForm') teamForm!: NgForm;
+
   team: Team = {
     id: '',
     name: '',
@@ -216,12 +154,14 @@ export class TeamFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.teamService.updateTeam(this.team);
-    } else {
-      this.teamService.addTeam(this.team);
+    if (this.teamForm.valid) {
+      if (this.isEditMode) {
+        this.teamService.updateTeam(this.team);
+      } else {
+        this.teamService.addTeam(this.team);
+      }
+      this.router.navigate(['/teams']);
     }
-    this.router.navigate(['/teams']);
   }
 
   onCancel(): void {
