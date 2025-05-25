@@ -207,8 +207,7 @@ export class MatchFormComponent implements OnInit {
     team2_id: '',
     tournament_id: '',
     stadium_id: '',
-    scheduled_at: new Date(),
-    status: 'scheduled'
+    scheduled_at: new Date()
   };
 
   tournaments: Tournament[] = [];
