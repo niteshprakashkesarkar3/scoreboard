@@ -33,7 +33,7 @@ const routes: Routes = [
   { path: 'stadiums/edit/:id', component: StadiumFormComponent },
   { path: 'players', component: PlayerListComponent },
   { path: 'players/add', component: PlayerFormComponent },
-  { path: 'players/edit/:id', component: PlayerFormComponent },
+  { path: 'players/edit/:id', component: PlayerFormComponent }, 
   { path: 'matches', component: MatchListComponent },
   { path: 'matches/add', component: MatchFormComponent },
   { path: 'matches/edit/:id', component: MatchFormComponent }
