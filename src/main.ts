@@ -14,6 +14,8 @@ import { StadiumListComponent } from './app/components/stadium-list/stadium-list
 import { StadiumFormComponent } from './app/components/stadium-form/stadium-form.component';
 import { PlayerListComponent } from './app/components/player-list/player-list.component';
 import { PlayerFormComponent } from './app/components/player-form/player-form.component';
+import { MatchListComponent } from './app/components/match-list/match-list.component';
+import { MatchFormComponent } from './app/components/match-form/match-form.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/tournaments', pathMatch: 'full' },
@@ -31,7 +33,10 @@ const routes: Routes = [
   { path: 'stadiums/edit/:id', component: StadiumFormComponent },
   { path: 'players', component: PlayerListComponent },
   { path: 'players/add', component: PlayerFormComponent },
-  { path: 'players/edit/:id', component: PlayerFormComponent }
+  { path: 'players/edit/:id', component: PlayerFormComponent },
+  { path: 'matches', component: MatchListComponent },
+  { path: 'matches/add', component: MatchFormComponent },
+  { path: 'matches/edit/:id', component: MatchFormComponent }
 ];
 
 @Component({
@@ -48,6 +53,7 @@ const routes: Routes = [
           <a routerLink="/teams" routerLinkActive="active">Teams</a>
           <a routerLink="/stadiums" routerLinkActive="active">Stadiums</a>
           <a routerLink="/players" routerLinkActive="active">Players</a>
+          <a routerLink="/matches" routerLinkActive="active">Matches</a>
         </nav>
       </header>
       
