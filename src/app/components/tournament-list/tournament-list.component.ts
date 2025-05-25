@@ -4,104 +4,37 @@ import { Router } from '@angular/router';
 import { Tournament } from '../../models/tournament.model';
 import { TournamentService } from '../../services/tournament.service';
 import { ListLayoutComponent } from '../shared/list-layout/list-layout.component';
-import { ButtonComponent } from '../shared/button/button.component';
+import { TableComponent, TableColumn } from '../shared/table/table.component';
 
 @Component({
   selector: 'app-tournament-list',
   standalone: true,
-  imports: [CommonModule, ListLayoutComponent, ButtonComponent],
+  imports: [CommonModule, ListLayoutComponent, TableComponent],
   template: `
     <app-list-layout
       title="Tournaments"
       itemName="Tournament"
       addRoute="/tournaments/add"
     >
-      <table class="tournament-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let tournament of tournaments">
-            <td>{{ tournament.id }}</td>
-            <td>{{ tournament.name }}</td>
-            <td>{{ tournament.startDate | date:'mediumDate' }}</td>
-            <td>{{ tournament.endDate | date:'mediumDate' }}</td>
-            <td>
-              <span class="status-badge" [class]="tournament.status">
-                {{ tournament.status }}
-              </span>
-            </td>
-            <td class="actions">
-              <app-button variant="edit" (onClick)="onEdit(tournament)">
-                Edit
-              </app-button>
-              <app-button variant="danger" (onClick)="onDelete(tournament.id)">
-                Delete
-              </app-button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <app-table
+        [columns]="columns"
+        [data]="tournaments"
+        (onEdit)="onEdit($event)"
+        (onDelete)="onDelete($event.id)"
+      ></app-table>
     </app-list-layout>
-  `,
-  styles: [`
-    .tournament-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-
-    th {
-      background-color: #f5f5f5;
-      font-weight: bold;
-    }
-
-    .status-badge {
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      text-transform: capitalize;
-    }
-
-    .status-badge.scheduled {
-      background-color: #e3f2fd;
-      color: #1565c0;
-    }
-
-    .status-badge.ongoing {
-      background-color: #fff3cd;
-      color: #856404;
-    }
-
-    .status-badge.played {
-      background-color: #c8e6c9;
-      color: #2e7d32;
-    }
-
-    .status-badge.cancelled {
-      background-color: #ffebee;
-      color: #c62828;
-    }
-
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-  `]
+  `
 })
 export class TournamentListComponent implements OnInit {
   tournaments: Tournament[] = [];
+  
+  columns: TableColumn[] = [
+    { key: 'id', header: 'ID' },
+    { key: 'name', header: 'Name' },
+    { key: 'startDate', header: 'Start Date', type: 'date' },
+    { key: 'endDate', header: 'End Date', type: 'date' },
+    { key: 'status', header: 'Status', type: 'status' }
+  ];
 
   constructor(
     private tournamentService: TournamentService,
