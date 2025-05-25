@@ -50,7 +50,7 @@ const routes: Routes = [
       </main>
       
       <footer class="app-footer">
-        <p>ScoreBoard - Copyright ScoreBoard &copy; 2025</p>
+        <p>ScoreBoard - Copyright &copy; 2025</p>
       </footer>
     </div>
   `,
