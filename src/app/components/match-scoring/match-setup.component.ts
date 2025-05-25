@@ -137,6 +137,7 @@ export class MatchSetupComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.match)
     // Convert total_overs to number
     this.match.total_overs = Number(this.match.total_overs);
     // Update match status to in_progress
