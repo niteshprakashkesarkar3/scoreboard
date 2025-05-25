@@ -4,7 +4,6 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { provideRouter, Routes } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
-import { PlayerStatsComponent } from './app/components/player-stats/player-stats.component';
 import { TournamentListComponent } from './app/components/tournament-list/tournament-list.component';
 import { TournamentFormComponent } from './app/components/tournament-form/tournament-form.component';
 import { GroupListComponent } from './app/components/group-list/group-list.component';
@@ -14,7 +13,6 @@ import { TeamFormComponent } from './app/components/team-form/team-form.componen
 
 const routes: Routes = [
   { path: '', redirectTo: '/tournaments', pathMatch: 'full' },
-  { path: 'stats', component: PlayerStatsComponent },
   { path: 'tournaments', component: TournamentListComponent },
   { path: 'tournaments/add', component: TournamentFormComponent },
   { path: 'tournaments/edit/:id', component: TournamentFormComponent },
@@ -38,7 +36,6 @@ const routes: Routes = [
           <a routerLink="/tournaments" routerLinkActive="active">Tournaments</a>
           <a routerLink="/groups" routerLinkActive="active">Groups</a>
           <a routerLink="/teams" routerLinkActive="active">Teams</a>
-          <a routerLink="/stats" routerLinkActive="active">Player Stats</a>
         </nav>
       </header>
       
