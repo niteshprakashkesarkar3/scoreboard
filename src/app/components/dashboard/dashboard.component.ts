@@ -201,6 +201,7 @@ import { Team } from '../../models/team.model';
       justify-content: space-between;
       align-items: center;
       font-weight: 500;
+      height: fit-content;
     }
 
     .match-card .vs {
