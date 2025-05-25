@@ -32,7 +32,7 @@ const routes: Routes = [
     <div class="app-container">
       <header class="app-header">
         <h1>ScoreBoard</h1>
-        <nav class="main-navigation">
+        <nav class="main-navigation"> 
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Tournament</a>
           <a routerLink="/tournaments" routerLinkActive="active">Tournaments</a>
           <a routerLink="/groups" routerLinkActive="active">Groups</a>
