@@ -9,7 +9,7 @@ async function pullFromGitHub() {
       fs,
       dir: '.',
       remote: 'origin',
-      url: 'YOUR_GITHUB_REPO_URL' // Replace with your GitHub repo URL
+      url: 'https://github.com/niteshprakashkesarkar3/scoreboard.git' // Replace with your GitHub repo URL
     });
     
     await git.pull({
