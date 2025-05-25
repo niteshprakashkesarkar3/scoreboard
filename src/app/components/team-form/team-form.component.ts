@@ -20,14 +20,14 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
       <app-form-layout
         itemName="Team"
         [isEditMode]="isEditMode"
-        [submitDisabled]="teamForm.invalid"
+        [submitDisabled]="teamForm.invalid!"
         (onSubmit)="onSubmit()"
         (onCancel)="onCancel()"
       >
         <app-form-field
           id="id"
           label="Team ID"
-          [showError]="id.invalid && (id.dirty || id.touched)"
+          [showError]="id.invalid! && (id.dirty! || id.touched!)"
           errorMessage="Team ID is required"
         >
           <input 
@@ -43,7 +43,7 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
         <app-form-field
           id="name"
           label="Team Name"
-          [showError]="name.invalid && (name.dirty || name.touched)"
+          [showError]="name.invalid! && (name.dirty! || name.touched!)"
           errorMessage="Team name is required"
         >
           <input 
@@ -58,7 +58,7 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
         <app-form-field
           id="tournamentId"
           label="Tournament"
-          [showError]="tournamentId.invalid && (tournamentId.dirty || tournamentId.touched)"
+          [showError]="tournamentId.invalid! && (tournamentId.dirty! || tournamentId.touched!)"
           errorMessage="Tournament is required"
         >
           <select 
@@ -78,7 +78,7 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
         <app-form-field
           id="groupId"
           label="Group"
-          [showError]="groupId.invalid && (groupId.dirty || groupId.touched)"
+          [showError]="groupId.invalid! && (groupId.dirty! || groupId.touched!)"
           errorMessage="Group is required"
         >
           <select 
