@@ -11,7 +11,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
       [id]="id"
       [value]="value"
       [required]="required"
-      (change)="onChange($event)"
+      (change)="onValueChange($event)"
       (blur)="onBlur()"
     >
       <option value="">{{ placeholder }}</option>
@@ -50,7 +50,7 @@ export class SelectComponent implements ControlValueAccessor {
   value: any = '';
   disabled = false;
   touched = false;
-  private onChangeCallback: (value: any) => void = () => {};
+  onChange = (_: any) => {};
   onTouched = () => {};
 
   writeValue(value: any): void {
@@ -58,7 +58,7 @@ export class SelectComponent implements ControlValueAccessor {
   }
 
   registerOnChange(fn: any): void {
-    this.onChangeCallback = fn;
+    this.onChange = fn;
   }
 
   registerOnTouched(fn: any): void {
@@ -69,10 +69,10 @@ export class SelectComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  onChange(event: Event): void {
+  onValueChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.value = select.value;
-    this.onChangeCallback(this.value);
+    this.onChange(this.value);
   }
 
   onBlur(): void {
