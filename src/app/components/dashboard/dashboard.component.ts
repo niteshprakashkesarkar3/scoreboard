@@ -174,6 +174,7 @@ import { Team } from '../../models/team.model';
       border-radius: 4px;
       font-size: 0.875rem;
       text-transform: capitalize;
+      width: fit-content;
     }
 
     .status-badge.scheduled {
