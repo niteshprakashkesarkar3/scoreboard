@@ -523,10 +523,7 @@ export class BallByBallComponent implements OnInit {
   constructor(private teamService: TeamService) {}
   
   ngOnInit(): void {
-    // Initialize available batsmen and bowlers
     this.initializePlayerLists();
-    
-    // Set initial batsmen and bowler based on match data
     this.setInitialPlayers();
   }
   
@@ -564,7 +561,6 @@ export class BallByBallComponent implements OnInit {
         );
       }
       
-      // Set defaults if available
       if (this.availableBatsmen.length >= 2) {
         this.currentBatsmen[0].id = this.availableBatsmen[0].id;
         this.currentBatsmen[1].id = this.availableBatsmen[1].id;
@@ -580,7 +576,6 @@ export class BallByBallComponent implements OnInit {
   
   private setInitialPlayers(): void {
     // This would typically be calculated based on the match data
-    // For now, we'll just use the first two batsmen and first bowler
   }
   
   formatOvers(overs: number): string {
@@ -626,10 +621,8 @@ export class BallByBallComponent implements OnInit {
   }
   
   addDelivery(): void {
-    // Calculate the current over number
     const currentOverNumber = Math.floor(this.innings.overs) + 1;
     
-    // Set delivery properties
     const delivery: Delivery = {
       ball: this.calculateBallNumber(),
       batsman: this.newDelivery.batsman,
@@ -655,30 +648,25 @@ export class BallByBallComponent implements OnInit {
       delivery.extraRuns = Number(this.newDelivery.extraRuns);
     }
     
-    // Update current batsmen and bowler stats
     this.updateStats(delivery);
     
-    // Reset the form for next delivery
     this.newDelivery = this.initializeNewDelivery();
     this.newDelivery.batsman = this.currentBatsmen.find(b => b.isOnStrike)?.id || '';
     this.newDelivery.bowler = this.currentBowler.id;
   }
   
   private calculateBallNumber(): number {
-    // Get the current over
     const currentOverNumber = Math.floor(this.innings.overs) + 1;
     const currentOver = this.innings.overHistory.find(o => o.number === currentOverNumber);
     
     if (!currentOver) return 1;
     
-    // Count legal deliveries
     const legalDeliveries = currentOver.deliveries.filter(
       d => !d.isExtra || (d.extraType !== 'wide' && d.extraType !== 'no ball')
     ).length;
     
-    // If we've completed an over (6 legal deliveries), start a new one
     if (legalDeliveries >= 6) {
-      return 1; // First ball of next over
+      return 1;
     }
     
     return legalDeliveries + 1;
@@ -695,7 +683,6 @@ export class BallByBallComponent implements OnInit {
   }
   
   private updateStats(delivery: Delivery): void {
-    // Update batsman on strike
     const onStrikeBatsman = this.currentBatsmen.find(b => b.isOnStrike);
     
     if (onStrikeBatsman && onStrikeBatsman.id === delivery.batsman) {
@@ -705,17 +692,14 @@ export class BallByBallComponent implements OnInit {
       if (delivery.isBoundary) onStrikeBatsman.fours += 1;
       if (delivery.isSix) onStrikeBatsman.sixes += 1;
       
-      // Change strike for odd runs (1, 3, 5)
       if (delivery.runs % 2 === 1) {
         this.toggleStrike();
       }
     }
     
-    // Update bowler stats
     if (delivery.bowler === this.currentBowler.id) {
       this.currentBowler.runs += delivery.totalRuns;
       
-      // Only count legal deliveries for bowler's overs
       if (!delivery.isExtra || (delivery.extraType !== 'wide' && delivery.extraType !== 'no ball')) {
         const balls = (this.currentBowler.balls || 0) + 1;
         this.currentBowler.balls = balls;
@@ -729,7 +713,6 @@ export class BallByBallComponent implements OnInit {
       }
     }
     
-    // Handle end of over
     const currentOverNumber = Math.floor(this.innings.overs) + 1;
     const currentOver = this.innings.overHistory.find(o => o.number === currentOverNumber);
     
@@ -739,19 +722,15 @@ export class BallByBallComponent implements OnInit {
       ).length;
       
       if (legalDeliveries >= 6) {
-        // End of over, change strike
         this.toggleStrike();
         
-        // Check if maiden over
         if (currentOver.runs === 0) {
           this.currentBowler.maidens += 1;
         }
       }
     }
     
-    // Handle wicket
     if (delivery.isWicket) {
-      // Replace the batsman
       const nextBatsmanIndex = this.availableBatsmen.findIndex(
         p => !this.currentBatsmen.some(b => b.id === p.id)
       );
@@ -760,7 +739,6 @@ export class BallByBallComponent implements OnInit {
         const outBatsmanIndex = this.currentBatsmen.findIndex(b => b.id === delivery.batsman);
         
         if (outBatsmanIndex !== -1) {
-          // New batsman takes the position of the out batsman
           this.currentBatsmen[outBatsmanIndex] = {
             id: this.availableBatsmen[nextBatsmanIndex].id,
             runs: 0,
@@ -770,7 +748,6 @@ export class BallByBallComponent implements OnInit {
             isOnStrike: true
           };
           
-          // The other batsman is not on strike
           this.currentBatsmen[1 - outBatsmanIndex].isOnStrike = false;
         }
       }
@@ -782,7 +759,6 @@ export class BallByBallComponent implements OnInit {
       batsman.isOnStrike = !batsman.isOnStrike;
     });
     
-    // Update the batsman in the new delivery form
     const onStrikeBatsman = this.currentBatsmen.find(b => b.isOnStrike);
     if (onStrikeBatsman) {
       this.newDelivery.batsman = onStrikeBatsman.id;
