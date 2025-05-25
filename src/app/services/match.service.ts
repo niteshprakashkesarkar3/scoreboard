@@ -39,7 +39,7 @@ export class MatchService {
         ...match,
         status: match.status || 'scheduled'
       }));
-      console.log('saveMatches', matchesWithStatus)
+      console.log('saveMatches', matchesWithStatus);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(matchesWithStatus));
       this.matchesSubject.next(matchesWithStatus);
     } catch (error) {
