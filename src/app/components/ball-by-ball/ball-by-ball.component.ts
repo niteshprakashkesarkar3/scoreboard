@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Match, Innings, Delivery } from '../../models/match.model';
 import { Player } from '../../models/team.model';
-import { CricketDataService } from '../../services/cricket-data.service';
+import { TeamService } from '../../services/team.service';
 
 @Component({
   selector: 'app-ball-by-ball',
@@ -520,7 +520,7 @@ export class BallByBallComponent implements OnInit {
   
   newDelivery: any = this.initializeNewDelivery();
   
-  constructor(private cricketDataService: CricketDataService) {}
+  constructor(private teamService: TeamService) {}
   
   ngOnInit(): void {
     // Initialize available batsmen and bowlers
@@ -550,30 +550,32 @@ export class BallByBallComponent implements OnInit {
   }
   
   private initializePlayerLists(): void {
-    const battingTeam = this.cricketDataService.getTeamById(this.innings.battingTeam);
-    const bowlingTeam = this.cricketDataService.getTeamById(this.innings.bowlingTeam);
-    
-    if (battingTeam) {
-      this.availableBatsmen = [...battingTeam.players];
-    }
-    
-    if (bowlingTeam) {
-      this.availableBowlers = [...bowlingTeam.players].filter(
-        p => p.role === 'Bowler' || p.role === 'All-rounder'
-      );
-    }
-    
-    // Set defaults if available
-    if (this.availableBatsmen.length >= 2) {
-      this.currentBatsmen[0].id = this.availableBatsmen[0].id;
-      this.currentBatsmen[1].id = this.availableBatsmen[1].id;
-      this.newDelivery.batsman = this.currentBatsmen[0].id;
-    }
-    
-    if (this.availableBowlers.length > 0) {
-      this.currentBowler.id = this.availableBowlers[0].id;
-      this.newDelivery.bowler = this.currentBowler.id;
-    }
+    this.teamService.teams$.subscribe(teams => {
+      const battingTeam = teams.find(t => t.id === this.innings.battingTeam);
+      const bowlingTeam = teams.find(t => t.id === this.innings.bowlingTeam);
+      
+      if (battingTeam) {
+        this.availableBatsmen = [...battingTeam.players];
+      }
+      
+      if (bowlingTeam) {
+        this.availableBowlers = [...bowlingTeam.players].filter(
+          p => p.role === 'Bowler' || p.role === 'All-rounder'
+        );
+      }
+      
+      // Set defaults if available
+      if (this.availableBatsmen.length >= 2) {
+        this.currentBatsmen[0].id = this.availableBatsmen[0].id;
+        this.currentBatsmen[1].id = this.availableBatsmen[1].id;
+        this.newDelivery.batsman = this.currentBatsmen[0].id;
+      }
+      
+      if (this.availableBowlers.length > 0) {
+        this.currentBowler.id = this.availableBowlers[0].id;
+        this.newDelivery.bowler = this.currentBowler.id;
+      }
+    });
   }
   
   private setInitialPlayers(): void {
@@ -588,18 +590,39 @@ export class BallByBallComponent implements OnInit {
   }
   
   getTeamName(teamId: string): string {
-    const team = this.cricketDataService.getTeamById(teamId);
-    return team ? team.name : 'Unknown Team';
+    let name = 'Unknown Team';
+    this.teamService.teams$.subscribe(teams => {
+      const team = teams.find(t => t.id === teamId);
+      if (team) {
+        name = team.name;
+      }
+    });
+    return name;
   }
   
   getPlayerName(playerId: string): string {
-    const player = this.cricketDataService.getPlayerById(playerId);
-    return player ? player.name : 'Unknown Player';
+    let name = 'Unknown Player';
+    this.teamService.teams$.subscribe(teams => {
+      for (const team of teams) {
+        const player = team.players.find(p => p.id === playerId);
+        if (player) {
+          name = player.name;
+          break;
+        }
+      }
+    });
+    return name;
   }
   
   getFieldingTeamPlayers(): Player[] {
-    const bowlingTeam = this.cricketDataService.getTeamById(this.innings.bowlingTeam);
-    return bowlingTeam ? bowlingTeam.players : [];
+    let players: Player[] = [];
+    this.teamService.teams$.subscribe(teams => {
+      const bowlingTeam = teams.find(t => t.id === this.innings.bowlingTeam);
+      if (bowlingTeam) {
+        players = bowlingTeam.players;
+      }
+    });
+    return players;
   }
   
   addDelivery(): void {
@@ -631,14 +654,6 @@ export class BallByBallComponent implements OnInit {
       delivery.extraType = this.newDelivery.extraType;
       delivery.extraRuns = Number(this.newDelivery.extraRuns);
     }
-    
-    // Add the delivery to the service
-    this.cricketDataService.addDelivery(
-      this.match.id, 
-      this.innings.id, 
-      currentOverNumber, 
-      delivery
-    );
     
     // Update current batsmen and bowler stats
     this.updateStats(delivery);
