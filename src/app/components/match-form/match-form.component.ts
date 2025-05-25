@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
@@ -10,17 +10,28 @@ import { MatchService } from '../../services/match.service';
 import { TeamService } from '../../services/team.service';
 import { TournamentService } from '../../services/tournament.service';
 import { StadiumService } from '../../services/stadium.service';
+import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
+import { FormFieldComponent } from '../shared/form-field/form-field.component';
 
 @Component({
   selector: 'app-match-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
   template: `
-    <div class="match-form-container">
-      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Match</h2>
-      <form (ngSubmit)="onSubmit()" #form="ngForm">
-        <div class="form-group">
-          <label for="id">Match ID</label>
+    <form #matchForm="ngForm">
+      <app-form-layout
+        itemName="Match"
+        [isEditMode]="isEditMode"
+        [submitDisabled]="matchForm.invalid!"
+        (onSubmit)="onSubmit()"
+        (onCancel)="onCancel()"
+      >
+        <app-form-field
+          id="id"
+          label="Match ID"
+          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          errorMessage="Match ID is required"
+        >
           <input 
             type="text" 
             id="id" 
@@ -29,13 +40,14 @@ import { StadiumService } from '../../services/stadium.service';
             required
             [readonly]="isEditMode"
             #id="ngModel">
-          <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
-            Match ID is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="tournament_id">Tournament</label>
+        <app-form-field
+          id="tournament_id"
+          label="Tournament"
+          [showError]="tournament_id.invalid! && (tournament_id.dirty! || tournament_id.touched!)"
+          errorMessage="Tournament is required"
+        >
           <select 
             id="tournament_id" 
             name="tournament_id" 
@@ -48,13 +60,14 @@ import { StadiumService } from '../../services/stadium.service';
               {{ tournament.name }}
             </option>
           </select>
-          <div class="error" *ngIf="tournament_id.invalid && (tournament_id.dirty || tournament_id.touched)">
-            Tournament is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="team1_id">Team 1</label>
+        <app-form-field
+          id="team1_id"
+          label="Team 1"
+          [showError]="team1_id.invalid! && (team1_id.dirty! || team1_id.touched!)"
+          errorMessage="Team 1 is required"
+        >
           <select 
             id="team1_id" 
             name="team1_id" 
@@ -66,13 +79,14 @@ import { StadiumService } from '../../services/stadium.service';
               {{ team.name }}
             </option>
           </select>
-          <div class="error" *ngIf="team1_id.invalid && (team1_id.dirty || team1_id.touched)">
-            Team 1 is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="team2_id">Team 2</label>
+        <app-form-field
+          id="team2_id"
+          label="Team 2"
+          [showError]="team2_id.invalid! && (team2_id.dirty! || team2_id.touched!)"
+          errorMessage="Team 2 is required"
+        >
           <select 
             id="team2_id" 
             name="team2_id" 
@@ -84,13 +98,14 @@ import { StadiumService } from '../../services/stadium.service';
               {{ team.name }}
             </option>
           </select>
-          <div class="error" *ngIf="team2_id.invalid && (team2_id.dirty || team2_id.touched)">
-            Team 2 is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="stadium_id">Stadium</label>
+        <app-form-field
+          id="stadium_id"
+          label="Stadium"
+          [showError]="stadium_id.invalid! && (stadium_id.dirty! || stadium_id.touched!)"
+          errorMessage="Stadium is required"
+        >
           <select 
             id="stadium_id" 
             name="stadium_id" 
@@ -102,13 +117,14 @@ import { StadiumService } from '../../services/stadium.service';
               {{ stadium.name }}
             </option>
           </select>
-          <div class="error" *ngIf="stadium_id.invalid && (stadium_id.dirty || stadium_id.touched)">
-            Stadium is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="scheduled_at">Scheduled At</label>
+        <app-form-field
+          id="scheduled_at"
+          label="Scheduled At"
+          [showError]="scheduled_at.invalid! && (scheduled_at.dirty! || scheduled_at.touched!)"
+          errorMessage="Schedule date and time is required"
+        >
           <input 
             type="datetime-local" 
             id="scheduled_at" 
@@ -117,90 +133,14 @@ import { StadiumService } from '../../services/stadium.service';
             (ngModelChange)="match.scheduled_at = $event"
             required
             #scheduled_at="ngModel">
-          <div class="error" *ngIf="scheduled_at.invalid && (scheduled_at.dirty || scheduled_at.touched)">
-            Schedule date and time is required
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Match</button>
-          <button type="button" (click)="onCancel()">Cancel</button>
-        </div>
-      </form>
-    </div>
-  `,
-  styles: [`
-    .match-form-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    input[readonly] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
-    .error {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
-      background-color: #1B5E20;
-      color: white;
-    }
-
-    button[type="submit"]:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    button[type="button"] {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-  `]
+        </app-form-field>
+      </app-form-layout>
+    </form>
+  `
 })
 export class MatchFormComponent implements OnInit {
+  @ViewChild('matchForm') matchForm!: NgForm;
+
   match: Match = {
     id: '',
     team1_id: '',
@@ -264,18 +204,15 @@ export class MatchFormComponent implements OnInit {
     }
   }
 
-  getTeamName(teamId: string): string {
-    const team = this.availableTeams.find(t => t.id === teamId);
-    return team ? team.name : '';
-  }
-
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.matchService.updateMatch(this.match);
-    } else {
-      this.matchService.addMatch(this.match);
+    if (this.matchForm.valid) {
+      if (this.isEditMode) {
+        this.matchService.updateMatch(this.match);
+      } else {
+        this.matchService.addMatch(this.match);
+      }
+      this.router.navigate(['/matches']);
     }
-    this.router.navigate(['/matches']);
   }
 
   onCancel(): void {
