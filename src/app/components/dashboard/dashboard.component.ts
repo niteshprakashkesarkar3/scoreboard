@@ -107,8 +107,6 @@ import { Team } from '../../models/team.model';
     }
 
     .cards-scroll-container {
-      overflow: hidden;
-      overflow-y: auto;
       margin: 0 -1.5rem;
       padding: 0 1.5rem;
     }
