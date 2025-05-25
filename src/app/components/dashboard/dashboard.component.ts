@@ -5,6 +5,7 @@ import { DashboardService } from '../../services/dashboard.service';
 import { Tournament } from '../../models/tournament.model';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
+import { StadiumService } from '../../services/stadium.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -240,7 +241,10 @@ export class DashboardComponent implements OnInit {
   matches: Match[] = [];
   teams: Team[] = [];
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private stadiumService: StadiumService
+  ) {}
 
   ngOnInit(): void {
     this.dashboardService.getDashboardData().subscribe(data => {
@@ -265,6 +269,13 @@ export class DashboardComponent implements OnInit {
   }
 
   getStadiumName(id: string): string {
-    return id; // You might want to implement stadium name lookup
+    let name = 'Unknown Stadium';
+    this.stadiumService.stadiums$.subscribe(stadiums => {
+      const stadium = stadiums.find(s => s.id === id);
+      if (stadium) {
+        name = stadium.name;
+      }
+    });
+    return name;
   }
 }
