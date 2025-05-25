@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { Tournament } from '../../models/tournament.model';
 import { TournamentService } from '../../services/tournament.service';
 
@@ -138,7 +138,10 @@ import { TournamentService } from '../../services/tournament.service';
 export class TournamentListComponent implements OnInit {
   tournaments: Tournament[] = [];
 
-  constructor(private tournamentService: TournamentService) {}
+  constructor(
+    private tournamentService: TournamentService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.tournamentService.tournaments$.subscribe(tournaments => {
@@ -147,7 +150,7 @@ export class TournamentListComponent implements OnInit {
   }
 
   onEdit(tournament: Tournament): void {
-    // Implement edit functionality
+    this.router.navigate(['/tournaments/edit', tournament.id]);
   }
 
   onDelete(id: string): void {

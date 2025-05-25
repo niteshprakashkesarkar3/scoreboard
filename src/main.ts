@@ -15,7 +15,8 @@ const routes: Routes = [
   { path: 'match/:id', component: MatchComponent },
   { path: 'stats', component: PlayerStatsComponent },
   { path: 'tournaments', component: TournamentListComponent },
-  { path: 'tournaments/add', component: TournamentFormComponent }
+  { path: 'tournaments/add', component: TournamentFormComponent },
+  { path: 'tournaments/edit/:id', component: TournamentFormComponent }
 ];
 
 @Component({

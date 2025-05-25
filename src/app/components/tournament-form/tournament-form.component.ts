@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Tournament } from '../../models/tournament.model';
 import { TournamentService } from '../../services/tournament.service';
 
@@ -11,7 +11,7 @@ import { TournamentService } from '../../services/tournament.service';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="tournament-form-container">
-      <h2>Add Tournament</h2>
+      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Tournament</h2>
       <form (ngSubmit)="onSubmit()" #form="ngForm">
         <div class="form-group">
           <label for="id">Tournament ID</label>
@@ -21,6 +21,7 @@ import { TournamentService } from '../../services/tournament.service';
             name="id" 
             [(ngModel)]="tournament.id" 
             required
+            [readonly]="isEditMode"
             #id="ngModel">
           <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
             Tournament ID is required
@@ -47,7 +48,8 @@ import { TournamentService } from '../../services/tournament.service';
             type="date" 
             id="startDate" 
             name="startDate" 
-            [(ngModel)]="tournament.startDate" 
+            [ngModel]="tournament.startDate | date:'yyyy-MM-dd'"
+            (ngModelChange)="tournament.startDate = $event"
             required
             #startDate="ngModel">
           <div class="error" *ngIf="startDate.invalid && (startDate.dirty || startDate.touched)">
@@ -61,7 +63,8 @@ import { TournamentService } from '../../services/tournament.service';
             type="date" 
             id="endDate" 
             name="endDate" 
-            [(ngModel)]="tournament.endDate" 
+            [ngModel]="tournament.endDate | date:'yyyy-MM-dd'"
+            (ngModelChange)="tournament.endDate = $event"
             required
             #endDate="ngModel">
           <div class="error" *ngIf="endDate.invalid && (endDate.dirty || endDate.touched)">
@@ -88,7 +91,7 @@ import { TournamentService } from '../../services/tournament.service';
         </div>
 
         <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid">Save Tournament</button>
+          <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Tournament</button>
           <button type="button" (click)="onCancel()">Cancel</button>
         </div>
       </form>
@@ -121,6 +124,11 @@ import { TournamentService } from '../../services/tournament.service';
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 1rem;
+    }
+
+    input[readonly] {
+      background-color: #f5f5f5;
+      cursor: not-allowed;
     }
 
     .error {
@@ -160,7 +168,7 @@ import { TournamentService } from '../../services/tournament.service';
     }
   `]
 })
-export class TournamentFormComponent {
+export class TournamentFormComponent implements OnInit {
   tournament: Tournament = {
     id: '',
     name: '',
@@ -169,13 +177,35 @@ export class TournamentFormComponent {
     status: 'scheduled'
   };
 
+  isEditMode = false;
+
   constructor(
     private tournamentService: TournamentService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = true;
+      this.tournamentService.tournaments$.subscribe(tournaments => {
+        const tournament = tournaments.find(t => t.id === id);
+        if (tournament) {
+          this.tournament = { ...tournament };
+        } else {
+          this.router.navigate(['/tournaments']);
+        }
+      });
+    }
+  }
+
   onSubmit(): void {
-    this.tournamentService.addTournament(this.tournament);
+    if (this.isEditMode) {
+      this.tournamentService.updateTournament(this.tournament);
+    } else {
+      this.tournamentService.addTournament(this.tournament);
+    }
     this.router.navigate(['/tournaments']);
   }
 
