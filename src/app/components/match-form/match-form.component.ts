@@ -140,28 +140,6 @@ import { StadiumService } from '../../services/stadium.service';
           </div>
         </div>
 
-        <div class="form-group" *ngIf="match.status === 'completed'">
-          <label for="winner_id">Winner</label>
-          <select 
-            id="winner_id" 
-            name="winner_id" 
-            [(ngModel)]="match.winner_id">
-            <option value="">No Winner (Draw)</option>
-            <option [value]="match.team1_id">{{ getTeamName(match.team1_id) }}</option>
-            <option [value]="match.team2_id">{{ getTeamName(match.team2_id) }}</option>
-          </select>
-        </div>
-
-        <div class="form-group" *ngIf="match.status === 'completed' && match.winner_id">
-          <label for="result">Result</label>
-          <input 
-            type="text" 
-            id="result" 
-            name="result" 
-            [(ngModel)]="match.result" 
-            placeholder="e.g., 'won by 5 wickets'">
-        </div>
-
         <div class="form-actions">
           <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Match</button>
           <button type="button" (click)="onCancel()">Cancel</button>
