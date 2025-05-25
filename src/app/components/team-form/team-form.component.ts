@@ -10,88 +10,99 @@ import { TournamentService } from '../../services/tournament.service';
 import { GroupService } from '../../services/group.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
+import { InputComponent } from '../shared/input/input.component';
+import { SelectComponent } from '../shared/select/select.component';
 
 @Component({
   selector: 'app-team-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    FormLayoutComponent, 
+    FormFieldComponent,
+    InputComponent,
+    SelectComponent
+  ],
   template: `
     <form #teamForm="ngForm">
       <app-form-layout
         itemName="Team"
         [isEditMode]="isEditMode"
-        [submitDisabled]="teamForm.invalid!"
+        [submitDisabled]="!teamForm.form.valid"
         (onSubmit)="onSubmit()"
         (onCancel)="onCancel()"
       >
         <app-form-field
           id="id"
           label="Team ID"
-          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          [showError]="!!(id.invalid && (id.dirty || id.touched))"
           errorMessage="Team ID is required"
         >
-          <input 
-            type="text" 
-            id="id" 
-            name="id" 
-            [(ngModel)]="team.id" 
-            required
+          <app-input
+            id="id"
+            name="id"
+            [(ngModel)]="team.id"
+            [required]="true"
             [readonly]="isEditMode"
-            #id="ngModel">
+            #id="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="name"
           label="Team Name"
-          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          [showError]="!!(name.invalid && (name.dirty || name.touched))"
           errorMessage="Team name is required"
         >
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            [(ngModel)]="team.name" 
-            required
-            #name="ngModel">
+          <app-input
+            id="name"
+            name="name"
+            [(ngModel)]="team.name"
+            [required]="true"
+            #name="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="tournamentId"
           label="Tournament"
-          [showError]="tournamentId.invalid! && (tournamentId.dirty! || tournamentId.touched!)"
+          [showError]="!!(tournamentId.invalid && (tournamentId.dirty || tournamentId.touched))"
           errorMessage="Tournament is required"
         >
-          <select 
-            id="tournamentId" 
-            name="tournamentId" 
-            [(ngModel)]="team.tournamentId" 
-            required
+          <app-select
+            id="tournamentId"
+            name="tournamentId"
+            [(ngModel)]="team.tournamentId"
+            [required]="true"
+            placeholder="Select Tournament"
             (ngModelChange)="onTournamentChange()"
-            #tournamentId="ngModel">
-            <option value="">Select Tournament</option>
+            #tournamentId="ngModel"
+          >
             <option *ngFor="let tournament of tournaments" [value]="tournament.id">
               {{ tournament.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
 
         <app-form-field
           id="groupId"
           label="Group"
-          [showError]="groupId.invalid! && (groupId.dirty! || groupId.touched!)"
+          [showError]="!!(groupId.invalid && (groupId.dirty || groupId.touched))"
           errorMessage="Group is required"
         >
-          <select 
-            id="groupId" 
-            name="groupId" 
-            [(ngModel)]="team.groupId" 
-            required
-            #groupId="ngModel">
-            <option value="">Select Group</option>
+          <app-select
+            id="groupId"
+            name="groupId"
+            [(ngModel)]="team.groupId"
+            [required]="true"
+            placeholder="Select Group"
+            #groupId="ngModel"
+          >
             <option *ngFor="let group of availableGroups" [value]="group.id">
               {{ group.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
       </app-form-layout>
     </form>
