@@ -118,6 +118,7 @@ import { Team } from '../../models/team.model';
       overflow-x: scroll;
       gap: 1rem;
       padding: 0.5rem 0;
+      margin: 10px 0;
       margin-bottom: -17px;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
