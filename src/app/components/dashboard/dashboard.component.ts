@@ -108,7 +108,7 @@ import { Team } from '../../models/team.model';
     }
 
     .cards-scroll-container {
-      overflow: hidden;
+      overflow: auto;
       margin: 0 -1.5rem;
       padding: 0 1.5rem;
     }
@@ -118,10 +118,11 @@ import { Team } from '../../models/team.model';
       overflow-x: scroll;
       gap: 1rem;
       padding: 0.5rem 0;
-      margin: 10px 0;
       margin-bottom: -17px;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
+      height: fit-content;
+      overflow: auto;
     }
 
     .cards-container::-webkit-scrollbar {
