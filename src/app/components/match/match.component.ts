@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CricketDataService } from '../../services/cricket-data.service';
 import { Match, Innings, Over, Delivery } from '../../models/match.model';
 import { BallByBallComponent } from '../ball-by-ball/ball-by-ball.component';
 import { ScorecardComponent } from '../scorecard/scorecard.component';
