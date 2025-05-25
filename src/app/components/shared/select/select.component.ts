@@ -50,7 +50,7 @@ export class SelectComponent implements ControlValueAccessor {
   value: any = '';
   disabled = false;
   touched = false;
-  onChange = (_: any) => {};
+  private onChangeCallback: (value: any) => void = () => {};
   onTouched = () => {};
 
   writeValue(value: any): void {
@@ -58,7 +58,7 @@ export class SelectComponent implements ControlValueAccessor {
   }
 
   registerOnChange(fn: any): void {
-    this.onChange = fn;
+    this.onChangeCallback = fn;
   }
 
   registerOnTouched(fn: any): void {
@@ -72,7 +72,7 @@ export class SelectComponent implements ControlValueAccessor {
   onChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.value = select.value;
-    this.onChange(this.value);
+    this.onChangeCallback(this.value);
   }
 
   onBlur(): void {

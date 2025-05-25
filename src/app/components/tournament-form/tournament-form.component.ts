@@ -25,14 +25,14 @@ import { SelectComponent } from '../shared/select/select.component';
       <app-form-layout
         itemName="Tournament"
         [isEditMode]="isEditMode"
-        [submitDisabled]="tournamentForm.invalid!"
+        [submitDisabled]="!tournamentForm.form.valid"
         (onSubmit)="onSubmit()"
         (onCancel)="onCancel()"
       >
         <app-form-field
           id="id"
           label="Tournament ID"
-          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          [showError]="id.invalid && (id.dirty || id.touched)"
           errorMessage="Tournament ID is required"
         >
           <app-input
@@ -48,7 +48,7 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="name"
           label="Tournament Name"
-          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          [showError]="name.invalid && (name.dirty || name.touched)"
           errorMessage="Tournament name is required"
         >
           <app-input
@@ -63,7 +63,7 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="startDate"
           label="Start Date"
-          [showError]="startDate.invalid! && (startDate.dirty! || startDate.touched!)"
+          [showError]="startDate.invalid && (startDate.dirty || startDate.touched)"
           errorMessage="Start date is required"
         >
           <app-input
@@ -79,7 +79,7 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="endDate"
           label="End Date"
-          [showError]="endDate.invalid! && (endDate.dirty! || endDate.touched!)"
+          [showError]="endDate.invalid && (endDate.dirty || endDate.touched)"
           errorMessage="End date is required"
         >
           <app-input
@@ -95,7 +95,7 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="status"
           label="Status"
-          [showError]="status.invalid! && (status.dirty! || status.touched!)"
+          [showError]="status.invalid && (status.dirty || status.touched)"
           errorMessage="Status is required"
         >
           <app-select
