@@ -1,0 +1,37 @@
+import { Routes } from '@angular/router';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { TournamentListComponent } from './components/tournament-list/tournament-list.component';
+import { TournamentFormComponent } from './components/tournament-form/tournament-form.component';
+import { GroupListComponent } from './components/group-list/group-list.component';
+import { GroupFormComponent } from './components/group-form/group-form.component';
+import { TeamListComponent } from './components/team-list/team-list.component';
+import { TeamFormComponent } from './components/team-form/team-form.component';
+import { StadiumListComponent } from './components/stadium-list/stadium-list.component';
+import { StadiumFormComponent } from './components/stadium-form/stadium-form.component';
+import { PlayerListComponent } from './components/player-list/player-list.component';
+import { PlayerFormComponent } from './components/player-form/player-form.component';
+import { MatchListComponent } from './components/match-list/match-list.component';
+import { MatchFormComponent } from './components/match-form/match-form.component';
+
+export const routes: Routes = [
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'tournaments', component: TournamentListComponent },
+  { path: 'tournaments/add', component: TournamentFormComponent },
+  { path: 'tournaments/edit/:id', component: TournamentFormComponent },
+  { path: 'groups', component: GroupListComponent },
+  { path: 'groups/add', component: GroupFormComponent },
+  { path: 'groups/edit/:id', component: GroupFormComponent },
+  { path: 'teams', component: TeamListComponent },
+  { path: 'teams/add', component: TeamFormComponent },
+  { path: 'teams/edit/:id', component: TeamFormComponent },
+  { path: 'stadiums', component: StadiumListComponent },
+  { path: 'stadiums/add', component: StadiumFormComponent },
+  { path: 'stadiums/edit/:id', component: StadiumFormComponent },
+  { path: 'players', component: PlayerListComponent },
+  { path: 'players/add', component: PlayerFormComponent },
+  { path: 'players/edit/:id', component: PlayerFormComponent },
+  { path: 'matches', component: MatchListComponent },
+  { path: 'matches/add', component: MatchFormComponent },
+  { path: 'matches/edit/:id', component: MatchFormComponent }
+];
