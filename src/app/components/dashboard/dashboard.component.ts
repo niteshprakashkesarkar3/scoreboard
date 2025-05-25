@@ -130,9 +130,9 @@ import { Team } from '../../models/team.model';
     }
 
     .cards-container::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255, 0.5);
+      background: rgba(27, 94, 32, 0.5);
       border-radius: 4px;
-      scrollbar-color: rgba(255,255,255, 0.5); 
+      scrollbar-color: rgba(27, 94, 32, 0.5); 
     }
 
     .cards-container::-webkit-scrollbar-thumb:hover {
