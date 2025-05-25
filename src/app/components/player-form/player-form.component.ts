@@ -1,22 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Player } from '../../models/player.model';
 import { Team } from '../../models/team.model';
 import { PlayerService } from '../../services/player.service';
 import { TeamService } from '../../services/team.service';
+import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
+import { FormFieldComponent } from '../shared/form-field/form-field.component';
 
 @Component({
   selector: 'app-player-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
   template: `
-    <div class="player-form-container">
-      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Player</h2>
-      <form (ngSubmit)="onSubmit()" #form="ngForm">
-        <div class="form-group">
-          <label for="id">Player ID</label>
+    <form #playerForm="ngForm">
+      <app-form-layout
+        itemName="Player"
+        [isEditMode]="isEditMode"
+        [submitDisabled]="playerForm.invalid! || player.roles.length === 0"
+        (onSubmit)="onSubmit()"
+        (onCancel)="onCancel()"
+      >
+        <app-form-field
+          id="id"
+          label="Player ID"
+          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          errorMessage="Player ID is required"
+        >
           <input 
             type="text" 
             id="id" 
@@ -25,13 +36,14 @@ import { TeamService } from '../../services/team.service';
             required
             [readonly]="isEditMode"
             #id="ngModel">
-          <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
-            Player ID is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="name">Player Name</label>
+        <app-form-field
+          id="name"
+          label="Player Name"
+          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          errorMessage="Player name is required"
+        >
           <input 
             type="text" 
             id="name" 
@@ -39,13 +51,14 @@ import { TeamService } from '../../services/team.service';
             [(ngModel)]="player.name" 
             required
             #name="ngModel">
-          <div class="error" *ngIf="name.invalid && (name.dirty || name.touched)">
-            Player name is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="teamId">Team</label>
+        <app-form-field
+          id="teamId"
+          label="Team"
+          [showError]="teamId.invalid! && (teamId.dirty! || teamId.touched!)"
+          errorMessage="Team is required"
+        >
           <select 
             id="teamId" 
             name="teamId" 
@@ -57,13 +70,14 @@ import { TeamService } from '../../services/team.service';
               {{ team.name }}
             </option>
           </select>
-          <div class="error" *ngIf="teamId.invalid && (teamId.dirty || teamId.touched)">
-            Team is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label>Roles</label>
+        <app-form-field
+          id="roles"
+          label="Roles"
+          [showError]="player.roles.length === 0"
+          errorMessage="At least one role must be selected"
+        >
           <div class="checkbox-group">
             <label *ngFor="let role of availableRoles" class="checkbox-label">
               <input 
@@ -74,13 +88,14 @@ import { TeamService } from '../../services/team.service';
               {{ role }}
             </label>
           </div>
-          <div class="error" *ngIf="player.roles.length === 0">
-            At least one role must be selected
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="status">Status</label>
+        <app-form-field
+          id="status"
+          label="Status"
+          [showError]="status.invalid! && (status.dirty! || status.touched!)"
+          errorMessage="Status is required"
+        >
           <select 
             id="status" 
             name="status" 
@@ -91,54 +106,11 @@ import { TeamService } from '../../services/team.service';
             <option value="injured">Injured</option>
             <option value="not playing">Not Playing</option>
           </select>
-          <div class="error" *ngIf="status.invalid && (status.dirty || status.touched)">
-            Status is required
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid || player.roles.length === 0">
-            {{ isEditMode ? 'Update' : 'Save' }} Player
-          </button>
-          <button type="button" (click)="onCancel()">Cancel</button>
-        </div>
-      </form>
-    </div>
+        </app-form-field>
+      </app-form-layout>
+    </form>
   `,
   styles: [`
-    .player-form-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    input[readonly] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
     .checkbox-group {
       display: flex;
       flex-wrap: wrap;
@@ -156,45 +128,11 @@ import { TeamService } from '../../services/team.service';
     .checkbox-label input[type="checkbox"] {
       width: auto;
     }
-
-    .error {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
-      background-color: #1B5E20;
-      color: white;
-    }
-
-    button[type="submit"]:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    button[type="button"] {
-      background-color: #f5f5f5;
-      color: #333;
-    }
   `]
 })
 export class PlayerFormComponent implements OnInit {
+  @ViewChild('playerForm') playerForm!: NgForm;
+
   player: Player = {
     id: '',
     name: '',
@@ -251,12 +189,14 @@ export class PlayerFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.playerService.updatePlayer(this.player);
-    } else {
-      this.playerService.addPlayer(this.player);
+    if (this.playerForm.valid && this.player.roles.length > 0) {
+      if (this.isEditMode) {
+        this.playerService.updatePlayer(this.player);
+      } else {
+        this.playerService.addPlayer(this.player);
+      }
+      this.router.navigate(['/players']);
     }
-    this.router.navigate(['/players']);
   }
 
   onCancel(): void {
