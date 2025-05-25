@@ -122,24 +122,6 @@ import { StadiumService } from '../../services/stadium.service';
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="status">Status</label>
-          <select 
-            id="status" 
-            name="status" 
-            [(ngModel)]="match.status" 
-            required
-            #status="ngModel">
-            <option value="scheduled">Scheduled</option>
-            <option value="in_progress">In Progress</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <div class="error" *ngIf="status.invalid && (status.dirty || status.touched)">
-            Status is required
-          </div>
-        </div>
-
         <div class="form-actions">
           <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Match</button>
           <button type="button" (click)="onCancel()">Cancel</button>
