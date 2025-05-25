@@ -6,11 +6,20 @@ import { Tournament } from '../../models/tournament.model';
 import { TournamentService } from '../../services/tournament.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
+import { InputComponent } from '../shared/input/input.component';
+import { SelectComponent } from '../shared/select/select.component';
 
 @Component({
   selector: 'app-tournament-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    FormLayoutComponent, 
+    FormFieldComponent,
+    InputComponent,
+    SelectComponent
+  ],
   template: `
     <form #tournamentForm="ngForm">
       <app-form-layout
@@ -26,14 +35,14 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
           [showError]="id.invalid! && (id.dirty! || id.touched!)"
           errorMessage="Tournament ID is required"
         >
-          <input 
-            type="text" 
-            id="id" 
-            name="id" 
-            [(ngModel)]="tournament.id" 
+          <app-input
+            id="id"
+            name="id"
+            [(ngModel)]="tournament.id"
             required
             [readonly]="isEditMode"
-            #id="ngModel">
+            #id="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
@@ -42,13 +51,13 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
           [showError]="name.invalid! && (name.dirty! || name.touched!)"
           errorMessage="Tournament name is required"
         >
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            [(ngModel)]="tournament.name" 
+          <app-input
+            id="name"
+            name="name"
+            [(ngModel)]="tournament.name"
             required
-            #name="ngModel">
+            #name="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
@@ -57,14 +66,14 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
           [showError]="startDate.invalid! && (startDate.dirty! || startDate.touched!)"
           errorMessage="Start date is required"
         >
-          <input 
-            type="date" 
-            id="startDate" 
-            name="startDate" 
-            [ngModel]="tournament.startDate | date:'yyyy-MM-dd'"
-            (ngModelChange)="tournament.startDate = $event"
+          <app-input
+            type="date"
+            id="startDate"
+            name="startDate"
+            [(ngModel)]="tournament.startDate"
             required
-            #startDate="ngModel">
+            #startDate="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
@@ -73,14 +82,14 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
           [showError]="endDate.invalid! && (endDate.dirty! || endDate.touched!)"
           errorMessage="End date is required"
         >
-          <input 
-            type="date" 
-            id="endDate" 
-            name="endDate" 
-            [ngModel]="tournament.endDate | date:'yyyy-MM-dd'"
-            (ngModelChange)="tournament.endDate = $event"
+          <app-input
+            type="date"
+            id="endDate"
+            name="endDate"
+            [(ngModel)]="tournament.endDate"
             required
-            #endDate="ngModel">
+            #endDate="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
@@ -89,17 +98,19 @@ import { FormFieldComponent } from '../shared/form-field/form-field.component';
           [showError]="status.invalid! && (status.dirty! || status.touched!)"
           errorMessage="Status is required"
         >
-          <select 
-            id="status" 
-            name="status" 
-            [(ngModel)]="tournament.status" 
+          <app-select
+            id="status"
+            name="status"
+            [(ngModel)]="tournament.status"
             required
-            #status="ngModel">
+            placeholder="Select Status"
+            #status="ngModel"
+          >
             <option value="scheduled">Scheduled</option>
             <option value="ongoing">Ongoing</option>
             <option value="played">Played</option>
             <option value="cancelled">Cancelled</option>
-          </select>
+          </app-select>
         </app-form-field>
       </app-form-layout>
     </form>
