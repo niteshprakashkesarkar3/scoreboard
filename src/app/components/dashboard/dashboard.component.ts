@@ -22,8 +22,7 @@ import { Team } from '../../models/team.model';
             <div *ngFor="let tournament of tournaments" class="card tournament-card">
               <h3>{{ tournament.name }}</h3>
               <div class="card-content">
-                <p>Start: {{ tournament.startDate | date }}</p>
-                <p>End: {{ tournament.endDate | date }}</p>
+                <p>{{ tournament.startDate | date }} - {{ tournament.endDate | date }}</p>
                 <span class="status-badge" [class]="tournament.status">
                   {{ tournament.status }}
                 </span>
@@ -112,7 +111,6 @@ import { Team } from '../../models/team.model';
       overflow-y: auto;
       margin: 0 -1.5rem;
       padding: 0 1.5rem;
-      height: 160px;
     }
 
     .cards-container {
