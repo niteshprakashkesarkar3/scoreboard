@@ -27,8 +27,6 @@ import { StadiumService } from '../../services/stadium.service';
               <th>Teams</th>
               <th>Stadium</th>
               <th>Scheduled At</th>
-              <th>Status</th>
-              <th>Result</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -41,16 +39,7 @@ import { StadiumService } from '../../services/stadium.service';
               </td>
               <td>{{ getStadiumName(match.stadium_id) }}</td>
               <td>{{ match.scheduled_at | date:'medium' }}</td>
-              <td>
-                <span class="status-badge" [class]="match.status">
-                  {{ match.status | titlecase }}
-                </span>
-              </td>
-              <td>
-                <span *ngIf="match.winner_id">
-                  {{ getTeamName(match.winner_id) }} {{ match.result }}
-                </span>
-              </td>
+              
               <td class="actions">
                 <button class="edit-button" (click)="onEdit(match)">Edit</button>
                 <button class="delete-button" (click)="onDelete(match.id)">Delete</button>
