@@ -23,7 +23,7 @@ import { Team } from '../../models/team.model';
               <h3>{{ tournament.name }}</h3>
               <div class="card-content">
                 <p>{{ tournament.startDate | date }} - {{ tournament.endDate | date }}</p>
-                <span class="status-badge" [class]="tournament.status">
+                <span class="status-badge" [class]="tournament.status"> 
                   {{ tournament.status }}
                 </span>
               </div>
