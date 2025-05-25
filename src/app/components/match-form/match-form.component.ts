@@ -160,7 +160,11 @@ export class MatchFormComponent implements OnInit {
     team2_id: '',
     tournament_id: '',
     stadium_id: '',
-    scheduled_at: new Date()
+    scheduled_at: new Date(),
+    status: 'scheduled',
+    total_overs: 20,
+    toss_winner_id: '',
+    toss_decision: 'bat'
   };
 
   tournaments: Tournament[] = [];

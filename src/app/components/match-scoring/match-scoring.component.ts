@@ -18,7 +18,7 @@ import { ButtonComponent } from '../shared/button/button.component';
       <div class="match-header">
         <h2>{{ getTeamName(match.team1_id) }} vs {{ getTeamName(match.team2_id) }}</h2>
         <p class="match-info">
-          {{ match.total_overs }} Overs Match
+          {{ match.total_overs ?? 20 }} Overs Match
           <span class="separator">|</span>
           Toss: {{ getTeamName(match.toss_winner_id) }} chose to {{ match.toss_decision }}
         </p>

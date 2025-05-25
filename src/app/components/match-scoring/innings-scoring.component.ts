@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Innings } from '../../models/innings.model';
 import { Ball, BallOutcome } from '../../models/ball.model';
 import { Player } from '../../models/player.model';
+import { Team } from '../../models/team.model';
 import { InningsService } from '../../services/innings.service';
 import { BallService } from '../../services/ball.service';
 import { PlayerService } from '../../services/player.service';
@@ -229,6 +230,7 @@ export class InningsScoringComponent implements OnInit {
   availableBatsmen: Player[] = [];
   availableBowlers: Player[] = [];
   showingWicketDialog = false;
+  teams: Team[] = [];
 
   constructor(
     private inningsService: InningsService,
@@ -251,6 +253,10 @@ export class InningsScoringComponent implements OnInit {
         this.router.navigate(['/matches']);
       }
     }
+
+    this.teamService.teams$.subscribe(teams => {
+      this.teams = teams;
+    });
   }
 
   private loadCurrentOver(): void {
@@ -274,7 +280,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   getBattingTeamName(): string {
-    const team = this.teamService.teams$.value.find(t => t.id === this.innings.batting_team_id);
+    const team = this.teams.find((t: Team) => t.id === this.innings.batting_team_id);
     return team ? team.name : '';
   }
 
@@ -324,7 +330,7 @@ export class InningsScoringComponent implements OnInit {
       ball_number: this.currentOverBalls.length + 1,
       batsman_id: this.currentBatsman,
       bowler_id: this.currentBowler,
-      runs: 1, // Default extra run
+      runs: 1,
       extras: 1,
       outcome: type,
       timestamp: new Date()
@@ -333,7 +339,6 @@ export class InningsScoringComponent implements OnInit {
     this.ballService.addBall(ball);
     this.updateInningsScore(1);
     
-    // Don't increment ball count for wides and no-balls
     if (type === 'wide' || type === 'no_ball') {
       this.currentOverBalls = this.currentOverBalls.slice(0, -1);
     }
@@ -374,14 +379,13 @@ export class InningsScoringComponent implements OnInit {
     this.updateInningsScore(details.runs || 0);
     this.hideWicketDialog();
     this.loadCurrentOver();
-    this.currentBatsman = ''; // Reset batsman after wicket
+    this.currentBatsman = '';
   }
 
   undoLastBall(): void {
     if (this.currentOverBalls.length > 0) {
       const lastBall = this.currentOverBalls[this.currentOverBalls.length - 1];
       
-      // Revert wicket if the last ball was a wicket
       if (lastBall.outcome === 'wicket') {
         this.innings.wickets--;
       }
@@ -396,7 +400,7 @@ export class InningsScoringComponent implements OnInit {
     if (this.currentOverBalls.length === 6) {
       this.currentOver++;
       this.currentOverBalls = [];
-      this.currentBowler = ''; // Reset bowler for new over
+      this.currentBowler = '';
     }
   }
 
