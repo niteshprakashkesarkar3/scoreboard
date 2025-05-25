@@ -4,10 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
-import { Player } from '../../models/player.model';
 import { MatchService } from '../../services/match.service';
 import { TeamService } from '../../services/team.service';
-import { PlayerService } from '../../services/player.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
 import { SelectComponent } from '../shared/select/select.component';
@@ -139,6 +137,9 @@ export class MatchSetupComponent implements OnInit {
   }
 
   onSubmit(): void {
+    // Convert total_overs to number
+    this.match.total_overs = Number(this.match.total_overs);
+    // Update match status to in_progress
     this.match.status = 'in_progress';
     this.matchService.updateMatch(this.match);
     this.router.navigate(['/matches', this.match.id, 'scoring']);
