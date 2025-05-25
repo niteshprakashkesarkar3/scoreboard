@@ -25,7 +25,7 @@ import { ButtonComponent } from '../shared/button/button.component';
         </p>
       </div>
 
-      <div class="innings-cards">
+      <div class="innings-cards"> 
         <div class="innings-card" *ngFor="let innings of matchInnings">
           <div class="innings-header">
             <h3>{{ getTeamName(innings.batting_team_id) }}</h3>

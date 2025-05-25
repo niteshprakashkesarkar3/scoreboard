@@ -231,6 +231,7 @@ export class InningsScoringComponent implements OnInit {
   availableBowlers: Player[] = [];
   showingWicketDialog = false;
   teams: Team[] = [];
+  matchInnings: Innings[] = [];
 
   constructor(
     private inningsService: InningsService,
@@ -248,6 +249,7 @@ export class InningsScoringComponent implements OnInit {
       return;
     }
 
+    this.loadInnings();
     const innings = this.inningsService.getInningsByMatch(inningsId).find(i => i.id === inningsId);
     if (innings) {
       this.innings = innings;
@@ -261,6 +263,12 @@ export class InningsScoringComponent implements OnInit {
     this.teamService.teams$.subscribe(teams => {
       this.teams = teams;
     });
+  }
+
+
+
+  loadInnings(): void {
+    this.matchInnings = this.inningsService.getInningsByMatch(this.route.snapshot.paramMap.get('id') || '');
   }
 
   private loadCurrentOver(): void {

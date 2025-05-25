@@ -35,7 +35,10 @@ export class InningsService {
   }
 
   getInningsByMatch(matchId: string): Innings[] {
-    return this.inningsSubject.value.filter(i => i.match_id === matchId);
+    const data = [...this.inningsSubject.value].filter(i => {
+      return i.match_id === matchId
+    });
+    return data;
   }
 
   addInnings(innings: Innings): void {
