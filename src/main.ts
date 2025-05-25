@@ -29,7 +29,7 @@ const routes: Routes = [
         <h1>CodeBlaze Cricket Tournament Tracker</h1>
         <nav class="main-navigation">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Tournament</a>
-          <a routerLink="/tournaments" routerLinkActive="active">Manage Tournaments</a>
+          <a routerLink="/tournaments" routerLinkActive="active">Tournaments</a>
           <a routerLink="/stats" routerLinkActive="active">Player Stats</a>
         </nav>
       </header>
