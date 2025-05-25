@@ -147,6 +147,27 @@ import { SelectComponent } from '../shared/select/select.component';
             #scheduled_at="ngModel"
           ></app-input>
         </app-form-field>
+
+        <app-form-field
+          id="status"
+          label="Status"
+          [showError]="!!(status.invalid && (status.dirty || status.touched))"
+          errorMessage="Status is required"
+        >
+          <app-select
+            id="status"
+            name="status"
+            [(ngModel)]="match.status"
+            [required]="true"
+            placeholder="Select Status"
+            #status="ngModel"
+          >
+            <option value="scheduled">Scheduled</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </app-select>
+        </app-form-field>
       </app-form-layout>
     </form>
   `
