@@ -1,20 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Stadium } from '../../models/stadium.model';
 import { StadiumService } from '../../services/stadium.service';
+import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
+import { FormFieldComponent } from '../shared/form-field/form-field.component';
 
 @Component({
   selector: 'app-stadium-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
   template: `
-    <div class="stadium-form-container">
-      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Stadium</h2>
-      <form (ngSubmit)="onSubmit()" #form="ngForm">
-        <div class="form-group">
-          <label for="id">Stadium ID</label>
+    <form #stadiumForm="ngForm">
+      <app-form-layout
+        itemName="Stadium"
+        [isEditMode]="isEditMode"
+        [submitDisabled]="stadiumForm.invalid!"
+        (onSubmit)="onSubmit()"
+        (onCancel)="onCancel()"
+      >
+        <app-form-field
+          id="id"
+          label="Stadium ID"
+          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          errorMessage="Stadium ID is required"
+        >
           <input 
             type="text" 
             id="id" 
@@ -23,13 +34,14 @@ import { StadiumService } from '../../services/stadium.service';
             required
             [readonly]="isEditMode"
             #id="ngModel">
-          <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
-            Stadium ID is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="name">Stadium Name</label>
+        <app-form-field
+          id="name"
+          label="Stadium Name"
+          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          errorMessage="Stadium name is required"
+        >
           <input 
             type="text" 
             id="name" 
@@ -37,13 +49,14 @@ import { StadiumService } from '../../services/stadium.service';
             [(ngModel)]="stadium.name" 
             required
             #name="ngModel">
-          <div class="error" *ngIf="name.invalid && (name.dirty || name.touched)">
-            Stadium name is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="address">Address</label>
+        <app-form-field
+          id="address"
+          label="Address"
+          [showError]="address.invalid! && (address.dirty! || address.touched!)"
+          errorMessage="Address is required"
+        >
           <input 
             type="text" 
             id="address" 
@@ -51,13 +64,14 @@ import { StadiumService } from '../../services/stadium.service';
             [(ngModel)]="stadium.address" 
             required
             #address="ngModel">
-          <div class="error" *ngIf="address.invalid && (address.dirty || address.touched)">
-            Address is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="city">City</label>
+        <app-form-field
+          id="city"
+          label="City"
+          [showError]="city.invalid! && (city.dirty! || city.touched!)"
+          errorMessage="City is required"
+        >
           <input 
             type="text" 
             id="city" 
@@ -65,13 +79,14 @@ import { StadiumService } from '../../services/stadium.service';
             [(ngModel)]="stadium.city" 
             required
             #city="ngModel">
-          <div class="error" *ngIf="city.invalid && (city.dirty || city.touched)">
-            City is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="state">State</label>
+        <app-form-field
+          id="state"
+          label="State"
+          [showError]="state.invalid! && (state.dirty! || state.touched!)"
+          errorMessage="State is required"
+        >
           <input 
             type="text" 
             id="state" 
@@ -79,13 +94,14 @@ import { StadiumService } from '../../services/stadium.service';
             [(ngModel)]="stadium.state" 
             required
             #state="ngModel">
-          <div class="error" *ngIf="state.invalid && (state.dirty || state.touched)">
-            State is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="country">Country</label>
+        <app-form-field
+          id="country"
+          label="Country"
+          [showError]="country.invalid! && (country.dirty! || country.touched!)"
+          errorMessage="Country is required"
+        >
           <input 
             type="text" 
             id="country" 
@@ -93,14 +109,15 @@ import { StadiumService } from '../../services/stadium.service';
             [(ngModel)]="stadium.country" 
             required
             #country="ngModel">
-          <div class="error" *ngIf="country.invalid && (country.dirty || country.touched)">
-            Country is required
-          </div>
-        </div>
+        </app-form-field>
 
         <div class="form-row">
-          <div class="form-group">
-            <label for="latitude">Latitude</label>
+          <app-form-field
+            id="latitude"
+            label="Latitude"
+            [showError]="latitude.invalid! && (latitude.dirty! || latitude.touched!)"
+            errorMessage="Latitude is required"
+          >
             <input 
               type="number" 
               id="latitude" 
@@ -109,13 +126,14 @@ import { StadiumService } from '../../services/stadium.service';
               required
               step="any"
               #latitude="ngModel">
-            <div class="error" *ngIf="latitude.invalid && (latitude.dirty || latitude.touched)">
-              Latitude is required
-            </div>
-          </div>
+          </app-form-field>
 
-          <div class="form-group">
-            <label for="longitude">Longitude</label>
+          <app-form-field
+            id="longitude"
+            label="Longitude"
+            [showError]="longitude.invalid! && (longitude.dirty! || longitude.touched!)"
+            errorMessage="Longitude is required"
+          >
             <input 
               type="number" 
               id="longitude" 
@@ -124,106 +142,19 @@ import { StadiumService } from '../../services/stadium.service';
               required
               step="any"
               #longitude="ngModel">
-            <div class="error" *ngIf="longitude.invalid && (longitude.dirty || longitude.touched)">
-              Longitude is required
-            </div>
-          </div>
+          </app-form-field>
         </div>
-
-        <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Stadium</button>
-          <button type="button" (click)="onCancel()">Cancel</button>
-        </div>
-      </form>
-    </div>
+      </app-form-layout>
+    </form>
   `,
   styles: [`
-    .stadium-form-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
     .form-row {
       display: flex;
       gap: 1rem;
     }
 
-    .form-row .form-group {
+    .form-row app-form-field {
       flex: 1;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    input[readonly] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
-    input[type="number"] {
-      -moz-appearance: textfield;
-    }
-
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .error {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
-      background-color: #1B5E20;
-      color: white;
-    }
-
-    button[type="submit"]:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    button[type="button"] {
-      background-color: #f5f5f5;
-      color: #333;
     }
 
     @media (max-width: 768px) {
@@ -235,6 +166,8 @@ import { StadiumService } from '../../services/stadium.service';
   `]
 })
 export class StadiumFormComponent implements OnInit {
+  @ViewChild('stadiumForm') stadiumForm!: NgForm;
+
   stadium: Stadium = {
     id: '',
     name: '',
@@ -270,12 +203,14 @@ export class StadiumFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.stadiumService.updateStadium(this.stadium);
-    } else {
-      this.stadiumService.addStadium(this.stadium);
+    if (this.stadiumForm.valid) {
+      if (this.isEditMode) {
+        this.stadiumService.updateStadium(this.stadium);
+      } else {
+        this.stadiumService.addStadium(this.stadium);
+      }
+      this.router.navigate(['/stadiums']);
     }
-    this.router.navigate(['/stadiums']);
   }
 
   onCancel(): void {
