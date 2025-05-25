@@ -32,14 +32,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="id"
           label="Tournament ID"
-          [showError]="id.invalid && (id.dirty || id.touched)"
+          [showError]="!!(id.invalid && (id.dirty || id.touched))"
           errorMessage="Tournament ID is required"
         >
           <app-input
             id="id"
             name="id"
             [(ngModel)]="tournament.id"
-            required
+            [required]="true"
             [readonly]="isEditMode"
             #id="ngModel"
           ></app-input>
@@ -48,14 +48,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="name"
           label="Tournament Name"
-          [showError]="name.invalid && (name.dirty || name.touched)"
+          [showError]="!!(name.invalid && (name.dirty || name.touched))"
           errorMessage="Tournament name is required"
         >
           <app-input
             id="name"
             name="name"
             [(ngModel)]="tournament.name"
-            required
+            [required]="true"
             #name="ngModel"
           ></app-input>
         </app-form-field>
@@ -63,7 +63,7 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="startDate"
           label="Start Date"
-          [showError]="startDate.invalid && (startDate.dirty || startDate.touched)"
+          [showError]="!!(startDate.invalid && (startDate.dirty || startDate.touched))"
           errorMessage="Start date is required"
         >
           <app-input
@@ -71,7 +71,7 @@ import { SelectComponent } from '../shared/select/select.component';
             id="startDate"
             name="startDate"
             [(ngModel)]="tournament.startDate"
-            required
+            [required]="true"
             #startDate="ngModel"
           ></app-input>
         </app-form-field>
@@ -79,7 +79,7 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="endDate"
           label="End Date"
-          [showError]="endDate.invalid && (endDate.dirty || endDate.touched)"
+          [showError]="!!(endDate.invalid && (endDate.dirty || endDate.touched))"
           errorMessage="End date is required"
         >
           <app-input
@@ -87,7 +87,7 @@ import { SelectComponent } from '../shared/select/select.component';
             id="endDate"
             name="endDate"
             [(ngModel)]="tournament.endDate"
-            required
+            [required]="true"
             #endDate="ngModel"
           ></app-input>
         </app-form-field>
@@ -95,14 +95,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="status"
           label="Status"
-          [showError]="status.invalid && (status.dirty || status.touched)"
+          [showError]="!!(status.invalid && (status.dirty || status.touched))"
           errorMessage="Status is required"
         >
           <app-select
             id="status"
             name="status"
             [(ngModel)]="tournament.status"
-            required
+            [required]="true"
             placeholder="Select Status"
             #status="ngModel"
           >
