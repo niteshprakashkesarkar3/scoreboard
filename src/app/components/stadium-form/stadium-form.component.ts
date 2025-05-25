@@ -6,142 +6,151 @@ import { Stadium } from '../../models/stadium.model';
 import { StadiumService } from '../../services/stadium.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
+import { InputComponent } from '../shared/input/input.component';
 
 @Component({
   selector: 'app-stadium-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    FormLayoutComponent, 
+    FormFieldComponent,
+    InputComponent
+  ],
   template: `
     <form #stadiumForm="ngForm">
       <app-form-layout
         itemName="Stadium"
         [isEditMode]="isEditMode"
-        [submitDisabled]="stadiumForm.invalid!"
+        [submitDisabled]="!stadiumForm.form.valid"
         (onSubmit)="onSubmit()"
         (onCancel)="onCancel()"
       >
         <app-form-field
           id="id"
           label="Stadium ID"
-          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          [showError]="!!(id.invalid && (id.dirty || id.touched))"
           errorMessage="Stadium ID is required"
         >
-          <input 
-            type="text" 
-            id="id" 
-            name="id" 
-            [(ngModel)]="stadium.id" 
-            required
+          <app-input
+            id="id"
+            name="id"
+            [(ngModel)]="stadium.id"
+            [required]="true"
             [readonly]="isEditMode"
-            #id="ngModel">
+            #id="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="name"
           label="Stadium Name"
-          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          [showError]="!!(name.invalid && (name.dirty || name.touched))"
           errorMessage="Stadium name is required"
         >
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            [(ngModel)]="stadium.name" 
-            required
-            #name="ngModel">
+          <app-input
+            id="name"
+            name="name"
+            [(ngModel)]="stadium.name"
+            [required]="true"
+            #name="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="address"
           label="Address"
-          [showError]="address.invalid! && (address.dirty! || address.touched!)"
+          [showError]="!!(address.invalid && (address.dirty || address.touched))"
           errorMessage="Address is required"
         >
-          <input 
-            type="text" 
-            id="address" 
-            name="address" 
-            [(ngModel)]="stadium.address" 
-            required
-            #address="ngModel">
+          <app-input
+            id="address"
+            name="address"
+            [(ngModel)]="stadium.address"
+            [required]="true"
+            #address="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="city"
           label="City"
-          [showError]="city.invalid! && (city.dirty! || city.touched!)"
+          [showError]="!!(city.invalid && (city.dirty || city.touched))"
           errorMessage="City is required"
         >
-          <input 
-            type="text" 
-            id="city" 
-            name="city" 
-            [(ngModel)]="stadium.city" 
-            required
-            #city="ngModel">
+          <app-input
+            id="city"
+            name="city"
+            [(ngModel)]="stadium.city"
+            [required]="true"
+            #city="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="state"
           label="State"
-          [showError]="state.invalid! && (state.dirty! || state.touched!)"
+          [showError]="!!(state.invalid && (state.dirty || state.touched))"
           errorMessage="State is required"
         >
-          <input 
-            type="text" 
-            id="state" 
-            name="state" 
-            [(ngModel)]="stadium.state" 
-            required
-            #state="ngModel">
+          <app-input
+            id="state"
+            name="state"
+            [(ngModel)]="stadium.state"
+            [required]="true"
+            #state="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="country"
           label="Country"
-          [showError]="country.invalid! && (country.dirty! || country.touched!)"
+          [showError]="!!(country.invalid && (country.dirty || country.touched))"
           errorMessage="Country is required"
         >
-          <input 
-            type="text" 
-            id="country" 
-            name="country" 
-            [(ngModel)]="stadium.country" 
-            required
-            #country="ngModel">
+          <app-input
+            id="country"
+            name="country"
+            [(ngModel)]="stadium.country"
+            [required]="true"
+            #country="ngModel"
+          ></app-input>
         </app-form-field>
 
         <div class="form-row">
           <app-form-field
             id="latitude"
             label="Latitude"
-            [showError]="latitude.invalid! && (latitude.dirty! || latitude.touched!)"
+            [showError]="!!(latitude.invalid && (latitude.dirty || latitude.touched))"
             errorMessage="Latitude is required"
           >
-            <input 
-              type="number" 
-              id="latitude" 
-              name="latitude" 
-              [(ngModel)]="stadium.latitude" 
-              required
+            <app-input
+              type="number"
+              id="latitude"
+              name="latitude"
+              [(ngModel)]="stadium.latitude"
+              [required]="true"
               step="any"
-              #latitude="ngModel">
+              #latitude="ngModel"
+            ></app-input>
           </app-form-field>
 
           <app-form-field
             id="longitude"
             label="Longitude"
-            [showError]="longitude.invalid! && (longitude.dirty! || longitude.touched!)"
+            [showError]="!!(longitude.invalid && (longitude.dirty || longitude.touched))"
             errorMessage="Longitude is required"
           >
-            <input 
-              type="number" 
-              id="longitude" 
-              name="longitude" 
-              [(ngModel)]="stadium.longitude" 
-              required
+            <app-input
+              type="number"
+              id="longitude"
+              name="longitude"
+              [(ngModel)]="stadium.longitude"
+              [required]="true"
               step="any"
-              #longitude="ngModel">
+              #longitude="ngModel"
+            ></app-input>
           </app-form-field>
         </div>
       </app-form-layout>
