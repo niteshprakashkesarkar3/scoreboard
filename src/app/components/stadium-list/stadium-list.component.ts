@@ -15,35 +15,37 @@ import { StadiumService } from '../../services/stadium.service';
         <button class="add-button" routerLink="/stadiums/add">Add Stadium</button>
       </div>
 
-      <table class="stadium-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Country</th>
-            <th>Coordinates</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let stadium of stadiums">
-            <td>{{ stadium.id }}</td>
-            <td>{{ stadium.name }}</td>
-            <td>{{ stadium.address }}</td>
-            <td>{{ stadium.city }}</td>
-            <td>{{ stadium.state }}</td>
-            <td>{{ stadium.country }}</td>
-            <td>{{ stadium.latitude }}, {{ stadium.longitude }}</td>
-            <td class="actions">
-              <button class="edit-button" (click)="onEdit(stadium)">Edit</button>
-              <button class="delete-button" (click)="onDelete(stadium.id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="stadium-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Country</th>
+              <th>Coordinates</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stadium of stadiums">
+              <td>{{ stadium.id }}</td>
+              <td>{{ stadium.name }}</td>
+              <td>{{ stadium.address }}</td>
+              <td>{{ stadium.city }}</td>
+              <td>{{ stadium.state }}</td>
+              <td>{{ stadium.country }}</td>
+              <td>{{ stadium.latitude }}, {{ stadium.longitude }}</td>
+              <td class="actions">
+                <button class="edit-button" (click)="onEdit(stadium)">Edit</button>
+                <button class="delete-button" (click)="onDelete(stadium.id)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   `,
   styles: [`
@@ -52,6 +54,7 @@ import { StadiumService } from '../../services/stadium.service';
       background-color: white;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 100%;
     }
 
     .header {
@@ -70,11 +73,15 @@ import { StadiumService } from '../../services/stadium.service';
       cursor: pointer;
     }
 
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
     .stadium-table {
       width: 100%;
       border-collapse: collapse;
-      overflow-x: auto;
-      display: block;
+      min-width: 1000px;
     }
 
     th, td {
@@ -87,6 +94,8 @@ import { StadiumService } from '../../services/stadium.service';
     th {
       background-color: #f5f5f5;
       font-weight: bold;
+      position: sticky;
+      top: 0;
     }
 
     .actions {
@@ -112,12 +121,16 @@ import { StadiumService } from '../../services/stadium.service';
     }
 
     @media (max-width: 768px) {
+      .stadium-list-container {
+        padding: 1rem;
+      }
+
       .stadium-table {
         font-size: 0.875rem;
       }
 
       th, td {
-        padding: 0.5rem;
+        padding: 0.75rem;
       }
     }
   `]
