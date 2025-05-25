@@ -14,7 +14,7 @@ import { ButtonComponent } from '../button/button.component';
         
         <div class="form-actions">
           <app-button 
-            type="submit" 
+            type="button" 
             [disabled]="submitDisabled"
             variant="primary"
           >
