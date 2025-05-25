@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
@@ -12,7 +13,7 @@ import { ButtonComponent } from '../shared/button/button.component';
 @Component({
   selector: 'app-match-scoring',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule, ButtonComponent, RouterLink],
   template: `
     <div class="match-scoring-container">
       <div class="match-header">
@@ -20,7 +21,7 @@ import { ButtonComponent } from '../shared/button/button.component';
         <p class="match-info">
           {{ match.total_overs ?? 20 }} Overs Match
           <span class="separator">|</span>
-          Toss: {{ getTeamName(match.toss_winner_id) }} chose to {{ match.toss_decision }}
+          Toss: {{ getTeamName(match.toss_winner_id ?? '') }} chose to {{ match.toss_decision }}
         </p>
       </div>
 
@@ -33,13 +34,11 @@ import { ButtonComponent } from '../shared/button/button.component';
               ({{ innings.overs }} ov)
             </span>
           </div>
-          <app-button
-            variant="primary"
-            [routerLink]="['/matches', match.id, 'innings', innings.id]"
-            *ngIf="innings.status === 'in_progress'"
-          >
-            Continue Scoring
-          </app-button>
+          <a [routerLink]="['/matches', match.id, 'innings', innings.id]" *ngIf="innings.status === 'in_progress'">
+            <app-button variant="primary">
+              Continue Scoring
+            </app-button>
+          </a>
         </div>
       </div>
 
@@ -195,7 +194,7 @@ export class MatchScoringComponent implements OnInit {
   startNewInnings(): void {
     const isFirstInnings = this.matchInnings.length === 0;
     const battingTeamId = isFirstInnings
-      ? (this.match.toss_decision === 'bat' ? this.match.toss_winner_id : this.getOtherTeamId(this.match.toss_winner_id))
+      ? (this.match.toss_decision === 'bat' ? this.match.toss_winner_id : this.getOtherTeamId(this.match.toss_winner_id ?? ''))
       : this.getOtherTeamId(this.matchInnings[0].batting_team_id);
 
     const bowlingTeamId = this.getOtherTeamId(battingTeamId);
