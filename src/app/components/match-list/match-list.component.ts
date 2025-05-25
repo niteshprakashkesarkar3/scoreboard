@@ -8,7 +8,7 @@ import { TournamentService } from '../../services/tournament.service';
 import { StadiumService } from '../../services/stadium.service';
 
 @Component({
-  selector: 'app-match-list',
+  selector: 'app-match-list', 
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
