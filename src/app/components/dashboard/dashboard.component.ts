@@ -1,23 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { DashboardService } from '../../services/dashboard.service';
 import { Tournament } from '../../models/tournament.model';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
 import { StadiumService } from '../../services/stadium.service';
 import { GroupService } from '../../services/group.service';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ButtonComponent],
   template: `
     <div class="dashboard-container">
       <section class="dashboard-section">
         <div class="section-header">
           <h2>Tournaments</h2>
-          <a routerLink="/tournaments" class="view-all">View All</a>
+          <app-button variant="primary" (onClick)="navigateTo('/tournaments')">
+            View All
+          </app-button>
         </div>
         <div class="cards-scroll-container">
           <div class="cards-container">
@@ -37,7 +40,9 @@ import { GroupService } from '../../services/group.service';
       <section class="dashboard-section">
         <div class="section-header">
           <h2>Upcoming Matches</h2>
-          <a routerLink="/matches" class="view-all">View All</a>
+          <app-button variant="primary" (onClick)="navigateTo('/matches')">
+            View All
+          </app-button>
         </div>
         <div class="cards-scroll-container">
           <div class="cards-container">
@@ -59,7 +64,9 @@ import { GroupService } from '../../services/group.service';
       <section class="dashboard-section">
         <div class="section-header">
           <h2>Teams</h2>
-          <a routerLink="/teams" class="view-all">View All</a>
+          <app-button variant="primary" (onClick)="navigateTo('/teams')">
+            View All
+          </app-button>
         </div>
         <div class="cards-scroll-container">
           <div class="cards-container">
@@ -101,12 +108,6 @@ import { GroupService } from '../../services/group.service';
       margin: 0;
       color: #1B5E20;
     }
-
-    .view-all {
-      color: #1B5E20;
-      text-decoration: none;
-      font-weight: 500;
-    }
  
     .cards-scroll-container {
       margin: 0 -1.5rem;
@@ -115,14 +116,13 @@ import { GroupService } from '../../services/group.service';
 
     .cards-container {
       display: flex;
-      overflow-x: scroll;
+      overflow-x: auto;
       gap: 1rem;
       padding: 0.5rem 0;
       margin-bottom: -17px;
       -webkit-overflow-scrolling: touch;
       scroll-behavior: smooth;
       height: fit-content;
-      overflow: auto;
     }
 
     .cards-container::-webkit-scrollbar {
@@ -245,7 +245,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private dashboardService: DashboardService,
     private stadiumService: StadiumService,
-    private groupService: GroupService
+    private groupService: GroupService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -286,5 +287,9 @@ export class DashboardComponent implements OnInit {
       }
     });
     return name;
+  }
+
+  navigateTo(path: string): void {
+    this.router.navigate([path]);
   }
 }
