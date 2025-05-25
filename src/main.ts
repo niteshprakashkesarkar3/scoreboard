@@ -31,7 +31,7 @@ const routes: Routes = [
   template: `
     <div class="app-container">
       <header class="app-header">
-        <h1>CodeBlaze Cricket Tournament Tracker</h1>
+        <h1>ScoreBoard</h1>
         <nav class="main-navigation">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Tournament</a>
           <a routerLink="/tournaments" routerLinkActive="active">Tournaments</a>
@@ -45,7 +45,7 @@ const routes: Routes = [
       </main>
       
       <footer class="app-footer">
-        <p>CodeBlaze Cricket Tournament Tracker - Copyright CodeBlaze &copy; 2025</p>
+        <p>ScoreBoard - Copyright ScoreBoard &copy; 2025</p>
       </footer>
     </div>
   `,
