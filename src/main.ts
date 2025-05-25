@@ -11,6 +11,8 @@ import { TournamentListComponent } from './app/components/tournament-list/tourna
 import { TournamentFormComponent } from './app/components/tournament-form/tournament-form.component';
 import { GroupListComponent } from './app/components/group-list/group-list.component';
 import { GroupFormComponent } from './app/components/group-form/group-form.component';
+import { TeamListComponent } from './app/components/team-list/team-list.component';
+import { TeamFormComponent } from './app/components/team-form/team-form.component';
 
 const routes: Routes = [
   { path: '', component: TournamentComponent },
@@ -21,7 +23,10 @@ const routes: Routes = [
   { path: 'tournaments/edit/:id', component: TournamentFormComponent },
   { path: 'groups', component: GroupListComponent },
   { path: 'groups/add', component: GroupFormComponent },
-  { path: 'groups/edit/:id', component: GroupFormComponent }
+  { path: 'groups/edit/:id', component: GroupFormComponent },
+  { path: 'teams', component: TeamListComponent },
+  { path: 'teams/add', component: TeamFormComponent },
+  { path: 'teams/edit/:id', component: TeamFormComponent }
 ];
 
 @Component({
@@ -32,10 +37,11 @@ const routes: Routes = [
     <div class="app-container">
       <header class="app-header">
         <h1>ScoreBoard</h1>
-        <nav class="main-navigation"> 
+        <nav class="main-navigation">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Tournament</a>
           <a routerLink="/tournaments" routerLinkActive="active">Tournaments</a>
           <a routerLink="/groups" routerLinkActive="active">Groups</a>
+          <a routerLink="/teams" routerLinkActive="active">Teams</a>
           <a routerLink="/stats" routerLinkActive="active">Player Stats</a>
         </nav>
       </header>
