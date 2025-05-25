@@ -4,7 +4,7 @@ export interface Match {
   team2_id: string;
   tournament_id: string;
   stadium_id: string;
-  scheduled_at: Date;
+  scheduled_at: Date; 
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
   winner_id?: string;
   result?: string;
