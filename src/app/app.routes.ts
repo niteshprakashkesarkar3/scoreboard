@@ -12,6 +12,9 @@ import { PlayerListComponent } from './components/player-list/player-list.compon
 import { PlayerFormComponent } from './components/player-form/player-form.component';
 import { MatchListComponent } from './components/match-list/match-list.component';
 import { MatchFormComponent } from './components/match-form/match-form.component';
+import { MatchScoringComponent } from './components/match-scoring/match-scoring.component';
+import { MatchSetupComponent } from './components/match-scoring/match-setup.component';
+import { InningsScoringComponent } from './components/match-scoring/innings-scoring.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -33,5 +36,8 @@ export const routes: Routes = [
   { path: 'players/edit/:id', component: PlayerFormComponent },
   { path: 'matches', component: MatchListComponent },
   { path: 'matches/add', component: MatchFormComponent },
-  { path: 'matches/edit/:id', component: MatchFormComponent }
+  { path: 'matches/edit/:id', component: MatchFormComponent },
+  { path: 'matches/:id/scoring', component: MatchScoringComponent },
+  { path: 'matches/:id/setup', component: MatchSetupComponent },
+  { path: 'matches/:id/innings/:inningsId', component: InningsScoringComponent }
 ];
