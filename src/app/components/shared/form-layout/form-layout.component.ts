@@ -17,6 +17,7 @@ import { ButtonComponent } from '../button/button.component';
             type="button" 
             [disabled]="submitDisabled"
             variant="primary"
+            (onClick)="onSubmit.emit()"
           >
             {{ isEditMode ? 'Update' : 'Save' }} {{ itemName }}
           </app-button>
