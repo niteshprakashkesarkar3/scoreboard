@@ -12,6 +12,8 @@ import { TeamListComponent } from './app/components/team-list/team-list.componen
 import { TeamFormComponent } from './app/components/team-form/team-form.component';
 import { StadiumListComponent } from './app/components/stadium-list/stadium-list.component';
 import { StadiumFormComponent } from './app/components/stadium-form/stadium-form.component';
+import { PlayerListComponent } from './app/components/player-list/player-list.component';
+import { PlayerFormComponent } from './app/components/player-form/player-form.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/tournaments', pathMatch: 'full' },
@@ -26,7 +28,10 @@ const routes: Routes = [
   { path: 'teams/edit/:id', component: TeamFormComponent },
   { path: 'stadiums', component: StadiumListComponent },
   { path: 'stadiums/add', component: StadiumFormComponent },
-  { path: 'stadiums/edit/:id', component: StadiumFormComponent }
+  { path: 'stadiums/edit/:id', component: StadiumFormComponent },
+  { path: 'players', component: PlayerListComponent },
+  { path: 'players/add', component: PlayerFormComponent },
+  { path: 'players/edit/:id', component: PlayerFormComponent }
 ];
 
 @Component({
@@ -42,6 +47,7 @@ const routes: Routes = [
           <a routerLink="/groups" routerLinkActive="active">Groups</a>
           <a routerLink="/teams" routerLinkActive="active">Teams</a>
           <a routerLink="/stadiums" routerLinkActive="active">Stadiums</a>
+          <a routerLink="/players" routerLinkActive="active">Players</a>
         </nav>
       </header>
       
