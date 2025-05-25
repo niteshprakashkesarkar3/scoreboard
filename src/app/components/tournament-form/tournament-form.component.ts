@@ -4,169 +4,104 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Tournament } from '../../models/tournament.model';
 import { TournamentService } from '../../services/tournament.service';
+import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
+import { FormFieldComponent } from '../shared/form-field/form-field.component';
 
 @Component({
   selector: 'app-tournament-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
   template: `
-    <div class="tournament-form-container">
-      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Tournament</h2>
-      <form (ngSubmit)="onSubmit()" #form="ngForm">
-        <div class="form-group">
-          <label for="id">Tournament ID</label>
-          <input 
-            type="text" 
-            id="id" 
-            name="id" 
-            [(ngModel)]="tournament.id" 
-            required
-            [readonly]="isEditMode"
-            #id="ngModel">
-          <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
-            Tournament ID is required
-          </div>
-        </div>
+    <app-form-layout
+      itemName="Tournament"
+      [isEditMode]="isEditMode"
+      [submitDisabled]="form.invalid"
+      (onSubmit)="onSubmit()"
+      (onCancel)="onCancel()"
+    >
+      <app-form-field
+        id="id"
+        label="Tournament ID"
+        [showError]="id.invalid && (id.dirty || id.touched)"
+        errorMessage="Tournament ID is required"
+      >
+        <input 
+          type="text" 
+          id="id" 
+          name="id" 
+          [(ngModel)]="tournament.id" 
+          required
+          [readonly]="isEditMode"
+          #id="ngModel">
+      </app-form-field>
 
-        <div class="form-group">
-          <label for="name">Tournament Name</label>
-          <input 
-            type="text" 
-            id="name" 
-            name="name" 
-            [(ngModel)]="tournament.name" 
-            required
-            #name="ngModel">
-          <div class="error" *ngIf="name.invalid && (name.dirty || name.touched)">
-            Tournament name is required
-          </div>
-        </div>
+      <app-form-field
+        id="name"
+        label="Tournament Name"
+        [showError]="name.invalid && (name.dirty || name.touched)"
+        errorMessage="Tournament name is required"
+      >
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          [(ngModel)]="tournament.name" 
+          required
+          #name="ngModel">
+      </app-form-field>
 
-        <div class="form-group">
-          <label for="startDate">Start Date</label>
-          <input 
-            type="date" 
-            id="startDate" 
-            name="startDate" 
-            [ngModel]="tournament.startDate | date:'yyyy-MM-dd'"
-            (ngModelChange)="tournament.startDate = $event"
-            required
-            #startDate="ngModel">
-          <div class="error" *ngIf="startDate.invalid && (startDate.dirty || startDate.touched)">
-            Start date is required
-          </div>
-        </div>
+      <app-form-field
+        id="startDate"
+        label="Start Date"
+        [showError]="startDate.invalid && (startDate.dirty || startDate.touched)"
+        errorMessage="Start date is required"
+      >
+        <input 
+          type="date" 
+          id="startDate" 
+          name="startDate" 
+          [ngModel]="tournament.startDate | date:'yyyy-MM-dd'"
+          (ngModelChange)="tournament.startDate = $event"
+          required
+          #startDate="ngModel">
+      </app-form-field>
 
-        <div class="form-group">
-          <label for="endDate">End Date</label>
-          <input 
-            type="date" 
-            id="endDate" 
-            name="endDate" 
-            [ngModel]="tournament.endDate | date:'yyyy-MM-dd'"
-            (ngModelChange)="tournament.endDate = $event"
-            required
-            #endDate="ngModel">
-          <div class="error" *ngIf="endDate.invalid && (endDate.dirty || endDate.touched)">
-            End date is required
-          </div>
-        </div>
+      <app-form-field
+        id="endDate"
+        label="End Date"
+        [showError]="endDate.invalid && (endDate.dirty || endDate.touched)"
+        errorMessage="End date is required"
+      >
+        <input 
+          type="date" 
+          id="endDate" 
+          name="endDate" 
+          [ngModel]="tournament.endDate | date:'yyyy-MM-dd'"
+          (ngModelChange)="tournament.endDate = $event"
+          required
+          #endDate="ngModel">
+      </app-form-field>
 
-        <div class="form-group">
-          <label for="status">Status</label>
-          <select 
-            id="status" 
-            name="status" 
-            [(ngModel)]="tournament.status" 
-            required
-            #status="ngModel">
-            <option value="scheduled">Scheduled</option>
-            <option value="ongoing">Ongoing</option>
-            <option value="played">Played</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <div class="error" *ngIf="status.invalid && (status.dirty || status.touched)">
-            Status is required
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Tournament</button>
-          <button type="button" (click)="onCancel()">Cancel</button>
-        </div>
-      </form>
-    </div>
-  `,
-  styles: [`
-    .tournament-form-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    input[readonly] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
-    .error {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
-      background-color: #1B5E20;
-      color: white;
-    }
-
-    button[type="submit"]:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    button[type="button"] {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-  `]
+      <app-form-field
+        id="status"
+        label="Status"
+        [showError]="status.invalid && (status.dirty || status.touched)"
+        errorMessage="Status is required"
+      >
+        <select 
+          id="status" 
+          name="status" 
+          [(ngModel)]="tournament.status" 
+          required
+          #status="ngModel">
+          <option value="scheduled">Scheduled</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="played">Played</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </app-form-field>
+    </app-form-layout>
+  `
 })
 export class TournamentFormComponent implements OnInit {
   tournament: Tournament = {
