@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Tournament } from '../../models/tournament.model';
 import { TournamentService } from '../../services/tournament.service';
+import { ListLayoutComponent } from '../shared/list-layout/list-layout.component';
+import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
   selector: 'app-tournament-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ListLayoutComponent, ButtonComponent],
   template: `
-    <div class="tournament-list-container">
-      <div class="header">
-        <h2>Tournaments</h2>
-        <button class="add-button" routerLink="/tournaments/add">Add Tournament</button>
-      </div>
-
+    <app-list-layout
+      title="Tournaments"
+      itemName="Tournament"
+      addRoute="/tournaments/add"
+    >
       <table class="tournament-table">
         <thead>
           <tr>
@@ -38,38 +39,19 @@ import { TournamentService } from '../../services/tournament.service';
               </span>
             </td>
             <td class="actions">
-              <button class="edit-button" (click)="onEdit(tournament)">Edit</button>
-              <button class="delete-button" (click)="onDelete(tournament.id)">Delete</button>
+              <app-button variant="edit" (onClick)="onEdit(tournament)">
+                Edit
+              </app-button>
+              <app-button variant="danger" (onClick)="onDelete(tournament.id)">
+                Delete
+              </app-button>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
+    </app-list-layout>
   `,
   styles: [`
-    .tournament-list-container {
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-    }
-
-    .add-button {
-      padding: 0.5rem 1rem;
-      background-color: #1B5E20;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
     .tournament-table {
       width: 100%;
       border-collapse: collapse;
@@ -115,23 +97,6 @@ import { TournamentService } from '../../services/tournament.service';
     .actions {
       display: flex;
       gap: 0.5rem;
-    }
-
-    .edit-button, .delete-button {
-      padding: 0.25rem 0.5rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .edit-button {
-      background-color: #e3f2fd;
-      color: #1565c0;
-    }
-
-    .delete-button {
-      background-color: #ffebee;
-      color: #c62828;
     }
   `]
 })
