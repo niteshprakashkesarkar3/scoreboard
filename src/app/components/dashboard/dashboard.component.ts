@@ -112,6 +112,7 @@ import { Team } from '../../models/team.model';
       overflow-y: auto;
       margin: 0 -1.5rem;
       padding: 0 1.5rem;
+      height: 160px;
     }
 
     .cards-container {
