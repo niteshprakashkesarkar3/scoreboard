@@ -181,11 +181,8 @@ export class MatchFormComponent implements OnInit {
     team2_id: '',
     tournament_id: '',
     stadium_id: '',
-    scheduled_at: new Date(),
-    status: 'scheduled',
-    total_overs: 20,
-    toss_winner_id: '',
-    toss_decision: 'bat'
+    scheduled_at: new Date().toISOString().slice(0, 16),
+    status: 'scheduled'
   };
 
   tournaments: Tournament[] = [];
@@ -217,7 +214,14 @@ export class MatchFormComponent implements OnInit {
       this.matchService.matches$.subscribe(matches => {
         const match = matches.find(m => m.id === id);
         if (match) {
-          this.match = { ...match };
+          // Convert date to local datetime-local format
+          const date = new Date(match.scheduled_at);
+          const scheduled_at = date.toISOString().slice(0, 16);
+          
+          this.match = { 
+            ...match,
+            scheduled_at
+          };
           this.onTournamentChange();
         } else {
           this.router.navigate(['/matches']);
@@ -244,10 +248,16 @@ export class MatchFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.matchForm.valid) {
+      // Convert datetime-local string back to Date object
+      const match = {
+        ...this.match,
+        scheduled_at: new Date(this.match.scheduled_at)
+      };
+
       if (this.isEditMode) {
-        this.matchService.updateMatch(this.match);
+        this.matchService.updateMatch(match);
       } else {
-        this.matchService.addMatch(this.match);
+        this.matchService.addMatch(match);
       }
       this.router.navigate(['/matches']);
     }
