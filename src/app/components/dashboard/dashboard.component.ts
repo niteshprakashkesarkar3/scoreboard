@@ -130,7 +130,7 @@ import { Team } from '../../models/team.model';
     }
 
     .cards-container::-webkit-scrollbar-thumb {
-      background: #1B5E20;
+      background: rgba(255,255,255, 0.2);
       border-radius: 4px;
     }
 
