@@ -9,7 +9,7 @@ import { ButtonComponent } from '../button/button.component';
   template: `
     <div class="form-container">
       <h2>{{ isEditMode ? 'Edit' : 'Add' }} {{ itemName }}</h2>
-      <form (ngSubmit)="onSubmit.emit()" #form="ngForm">
+      <form (ngSubmit)="onSubmit.emit()">
         <ng-content></ng-content>
         
         <div class="form-actions">
