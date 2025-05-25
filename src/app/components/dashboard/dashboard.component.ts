@@ -105,7 +105,7 @@ import { Team } from '../../models/team.model';
       text-decoration: none;
       font-weight: 500;
     }
-
+ 
     .cards-scroll-container {
       margin: 0 -1.5rem;
       padding: 0 1.5rem;
