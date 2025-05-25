@@ -194,8 +194,10 @@ export class MatchScoringComponent implements OnInit {
   startNewInnings(): void {
     const isFirstInnings = this.matchInnings.length === 0;
     const battingTeamId = isFirstInnings
-      ? (this.match.toss_decision === 'bat' ? this.match.toss_winner_id : this.getOtherTeamId(this.match.toss_winner_id ?? ''))
-      : this.getOtherTeamId(this.matchInnings[0].batting_team_id);
+      ? (this.match.toss_decision === 'bat' 
+          ? (this.match.toss_winner_id ?? '') 
+          : this.getOtherTeamId(this.match.toss_winner_id ?? ''))
+      : this.getOtherTeamId(this.matchInnings[0]?.batting_team_id ?? '');
 
     const bowlingTeamId = this.getOtherTeamId(battingTeamId);
 
