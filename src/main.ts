@@ -4,7 +4,6 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { provideRouter, Routes } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
-import { MatchComponent } from './app/components/match/match.component';
 import { PlayerStatsComponent } from './app/components/player-stats/player-stats.component';
 import { TournamentListComponent } from './app/components/tournament-list/tournament-list.component';
 import { TournamentFormComponent } from './app/components/tournament-form/tournament-form.component';
@@ -15,7 +14,6 @@ import { TeamFormComponent } from './app/components/team-form/team-form.componen
 
 const routes: Routes = [
   { path: '', redirectTo: '/tournaments', pathMatch: 'full' },
-  { path: 'match/:id', component: MatchComponent },
   { path: 'stats', component: PlayerStatsComponent },
   { path: 'tournaments', component: TournamentListComponent },
   { path: 'tournaments/add', component: TournamentFormComponent },
