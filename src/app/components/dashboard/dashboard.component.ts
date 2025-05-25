@@ -7,79 +7,62 @@ import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
 import { StadiumService } from '../../services/stadium.service';
 import { GroupService } from '../../services/group.service';
-import { ButtonComponent } from '../shared/button/button.component';
+import { CardComponent } from '../shared/card/card.component';
+import { CardListLayoutComponent } from '../shared/card-list-layout/card-list-layout.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule, CardComponent, CardListLayoutComponent],
   template: `
     <div class="dashboard-container">
-      <section class="dashboard-section">
-        <div class="section-header">
-          <h2>Tournaments</h2>
-          <app-button variant="primary" (onClick)="navigateTo('/tournaments')">
-            View All
-          </app-button>
-        </div>
-        <div class="cards-scroll-container">
-          <div class="cards-container">
-            <div *ngFor="let tournament of tournaments" class="card tournament-card">
-              <h3>{{ tournament.name }}</h3>
-              <div class="card-content">
-                <p>{{ tournament.startDate | date }} - {{ tournament.endDate | date }}</p>
-                <span class="status-badge" [class]="tournament.status"> 
-                  {{ tournament.status }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <app-card-list-layout
+        title="Tournaments"
+        (onViewAll)="navigateTo('/tournaments')"
+      >
+        <app-card
+          *ngFor="let tournament of tournaments"
+          [title]="tournament.name"
+          (click)="navigateTo('/tournaments/edit/' + tournament.id)"
+        >
+          <p>{{ tournament.startDate | date }} - {{ tournament.endDate | date }}</p>
+          <span class="status-badge" [class]="tournament.status">
+            {{ tournament.status }}
+          </span>
+        </app-card>
+      </app-card-list-layout>
 
-      <section class="dashboard-section">
-        <div class="section-header">
-          <h2>Upcoming Matches</h2>
-          <app-button variant="primary" (onClick)="navigateTo('/matches')">
-            View All
-          </app-button>
-        </div>
-        <div class="cards-scroll-container">
-          <div class="cards-container">
-            <div *ngFor="let match of matches" class="card match-card">
-              <div class="card-content">
-                <div class="teams">
-                  <span>{{ getTeamName(match.team1_id) }}</span>
-                  <span class="vs">vs</span>
-                  <span>{{ getTeamName(match.team2_id) }}</span>
-                </div>
-                <p class="venue">{{ getStadiumName(match.stadium_id) }}</p>
-                <p class="date">{{ match.scheduled_at | date:'medium' }}</p>
-              </div>
-            </div>
+      <app-card-list-layout
+        title="Upcoming Matches"
+        (onViewAll)="navigateTo('/matches')"
+      >
+        <app-card
+          *ngFor="let match of matches"
+          (click)="navigateTo('/matches/edit/' + match.id)"
+        >
+          <div class="teams">
+            <span>{{ getTeamName(match.team1_id) }}</span>
+            <span class="vs">vs</span>
+            <span>{{ getTeamName(match.team2_id) }}</span>
           </div>
-        </div>
-      </section>
+          <p class="venue">{{ getStadiumName(match.stadium_id) }}</p>
+          <p class="date">{{ match.scheduled_at | date:'medium' }}</p>
+        </app-card>
+      </app-card-list-layout>
 
-      <section class="dashboard-section">
-        <div class="section-header">
-          <h2>Teams</h2>
-          <app-button variant="primary" (onClick)="navigateTo('/teams')">
-            View All
-          </app-button>
-        </div>
-        <div class="cards-scroll-container">
-          <div class="cards-container">
-            <div *ngFor="let team of teams" class="card team-card">
-              <h3>{{ team.name }}</h3>
-              <div class="card-content">
-                <p>Tournament: {{ getTournamentName(team.tournamentId) }}</p>
-                <p>Group: {{ getGroupName(team.groupId) }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <app-card-list-layout
+        title="Teams"
+        (onViewAll)="navigateTo('/teams')"
+      >
+        <app-card
+          *ngFor="let team of teams"
+          [title]="team.name"
+          (click)="navigateTo('/teams/edit/' + team.id)"
+        >
+          <p>Tournament: {{ getTournamentName(team.tournamentId) }}</p>
+          <p>Group: {{ getGroupName(team.groupId) }}</p>
+        </app-card>
+      </app-card-list-layout>
     </div>
   `,
   styles: [`
@@ -88,86 +71,6 @@ import { ButtonComponent } from '../shared/button/button.component';
       display: flex;
       flex-direction: column;
       gap: 2rem;
-    }
-
-    .dashboard-section {
-      background: white;
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .section-header h2 {
-      margin: 0;
-      color: #1B5E20;
-    }
- 
-    .cards-scroll-container {
-      margin: 0 -1.5rem;
-      padding: 0 1.5rem;
-    }
-
-    .cards-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 1rem;
-      padding: 0.5rem 0;
-      margin-bottom: -17px;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
-      height: fit-content;
-    }
-
-    .cards-container::-webkit-scrollbar {
-      height: 8px;
-      background: #f0f0f0;
-      border-radius: 4px;
-    }
-
-    .cards-container::-webkit-scrollbar-thumb {
-      background: rgba(27, 94, 32, 0.5);
-      border-radius: 4px;
-      scrollbar-color: rgba(27, 94, 32, 0.5); 
-    }
-
-    .cards-container::-webkit-scrollbar-thumb:hover {
-      background: #154c1a;
-    }
-
-    .card {
-      flex: 0 0 300px;
-      padding: 1rem;
-      border-radius: 8px;
-      border: 1px solid #eee;
-      background: white;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .card h3 {
-      margin: 0 0 1rem 0;
-      color: #1B5E20;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-content {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
     }
 
     .status-badge {
@@ -199,7 +102,7 @@ import { ButtonComponent } from '../shared/button/button.component';
       color: #c62828;
     }
 
-    .match-card .teams {
+    .teams {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -207,13 +110,13 @@ import { ButtonComponent } from '../shared/button/button.component';
       height: fit-content;
     }
 
-    .match-card .vs {
+    .vs {
       color: #666;
       font-size: 0.875rem;
       margin: 0 0.5rem;
     }
 
-    .match-card .venue {
+    .venue {
       color: #666;
       font-size: 0.875rem;
       white-space: nowrap;
@@ -221,7 +124,7 @@ import { ButtonComponent } from '../shared/button/button.component';
       text-overflow: ellipsis;
     }
 
-    .match-card .date {
+    .date {
       color: #1B5E20;
       font-weight: 500;
     }
@@ -229,10 +132,6 @@ import { ButtonComponent } from '../shared/button/button.component';
     @media (max-width: 768px) {
       .dashboard-container {
         padding: 1rem;
-      }
-
-      .card {
-        flex: 0 0 250px;
       }
     }
   `]
