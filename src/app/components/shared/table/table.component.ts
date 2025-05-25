@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../button/button.component';
 
@@ -40,6 +40,10 @@ export interface TableColumn {
               </ng-container>
             </td>
             <td *ngIf="showActions" class="actions">
+              <ng-container *ngIf="actionButtons">
+                <ng-container *ngTemplateOutlet="actionButtons; context: { $implicit: item }">
+                </ng-container>
+              </ng-container>
               <app-button variant="edit" (onClick)="onEdit.emit(item)">
                 Edit
               </app-button>
@@ -94,12 +98,12 @@ export interface TableColumn {
       color: #1565c0;
     }
 
-    .status-badge.ongoing {
+    .status-badge.in_progress {
       background-color: #fff3cd;
       color: #856404;
     }
 
-    .status-badge.played {
+    .status-badge.completed {
       background-color: #c8e6c9;
       color: #2e7d32;
     }
@@ -117,4 +121,6 @@ export class TableComponent {
   
   @Output() onEdit = new EventEmitter<any>();
   @Output() onDelete = new EventEmitter<any>();
+
+  @ContentChild('actionButtons') actionButtons?: TemplateRef<any>;
 }
