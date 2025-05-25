@@ -25,7 +25,7 @@ import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component'
     WicketDialogComponent
   ],
   template: `
-    <div class="innings-scoring-container">
+    <div class="innings-scoring-container" *ngIf="innings">
       <div class="scoring-header">
         <h2>{{ getBattingTeamName() }} Innings</h2>
         <div class="score-summary">
@@ -243,15 +243,19 @@ export class InningsScoringComponent implements OnInit {
 
   ngOnInit(): void {
     const inningsId = this.route.snapshot.paramMap.get('inningsId');
-    if (inningsId) {
-      const innings = this.inningsService.getInningsByMatch(inningsId)[0];
-      if (innings) {
-        this.innings = innings;
-        this.loadCurrentOver();
-        this.loadPlayers();
-      } else {
-        this.router.navigate(['/matches']);
-      }
+    if (!inningsId) {
+      this.router.navigate(['/matches']);
+      return;
+    }
+
+    const innings = this.inningsService.getInningsByMatch(inningsId).find(i => i.id === inningsId);
+    if (innings) {
+      this.innings = innings;
+      this.loadCurrentOver();
+      this.loadPlayers();
+    } else {
+      this.router.navigate(['/matches']);
+      return;
     }
 
     this.teamService.teams$.subscribe(teams => {
@@ -260,6 +264,8 @@ export class InningsScoringComponent implements OnInit {
   }
 
   private loadCurrentOver(): void {
+    if (!this.innings) return;
+    
     const balls = this.ballService.getBallsByInnings(this.innings.id);
     this.currentOver = Math.floor(balls.length / 6);
     this.currentOverBalls = balls.filter(b => 
@@ -268,6 +274,8 @@ export class InningsScoringComponent implements OnInit {
   }
 
   private loadPlayers(): void {
+    if (!this.innings) return;
+
     this.availableBatsmen = this.playerService
       .getPlayersByTeam(this.innings.batting_team_id)
       .filter(p => p.status === 'playing');
@@ -280,6 +288,8 @@ export class InningsScoringComponent implements OnInit {
   }
 
   getBattingTeamName(): string {
+    if (!this.innings) return '';
+    
     const team = this.teams.find((t: Team) => t.id === this.innings.batting_team_id);
     return team ? team.name : '';
   }
@@ -294,6 +304,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   addRuns(runs: number): void {
+    if (!this.innings) return;
     if (!this.currentBatsman || !this.currentBowler) {
       alert('Please select both batsman and bowler');
       return;
@@ -318,6 +329,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   addExtra(type: BallOutcome): void {
+    if (!this.innings) return;
     if (!this.currentBowler) {
       alert('Please select a bowler');
       return;
@@ -347,6 +359,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   showWicketDialog(): void {
+    if (!this.innings) return;
     if (!this.currentBatsman || !this.currentBowler) {
       alert('Please select both batsman and bowler');
       return;
@@ -359,6 +372,8 @@ export class InningsScoringComponent implements OnInit {
   }
 
   handleWicket(details: WicketDetails): void {
+    if (!this.innings) return;
+
     const ball: Ball = {
       id: `${this.innings.id}_${this.currentOver}_${this.currentOverBalls.length + 1}`,
       innings_id: this.innings.id,
@@ -383,6 +398,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   undoLastBall(): void {
+    if (!this.innings) return;
     if (this.currentOverBalls.length > 0) {
       const lastBall = this.currentOverBalls[this.currentOverBalls.length - 1];
       
@@ -397,6 +413,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   endOver(): void {
+    if (!this.innings) return;
     if (this.currentOverBalls.length === 6) {
       this.currentOver++;
       this.currentOverBalls = [];
@@ -405,6 +422,7 @@ export class InningsScoringComponent implements OnInit {
   }
 
   private updateInningsScore(runs: number): void {
+    if (!this.innings) return;
     this.innings.total_runs += runs;
     this.innings.overs = this.currentOver + (this.currentOverBalls.length / 6);
     this.inningsService.updateInnings(this.innings);
