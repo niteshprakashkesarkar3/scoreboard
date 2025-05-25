@@ -10,4 +10,10 @@ export interface Team {
   tournamentId: string;
   groupId: string;
   players: Player[];
+  matches: number;
+  won: number;
+  lost: number;
+  tied: number;
+  points: number;
+  netRunRate: number;
 }
