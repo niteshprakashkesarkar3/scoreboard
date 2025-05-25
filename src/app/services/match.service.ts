@@ -62,6 +62,7 @@ export class MatchService {
         status: match.status || 'scheduled'
       } : m
     );
+      console.log('maches', matchesWithStatus)
     this.saveMatches(matches);
   }
 
