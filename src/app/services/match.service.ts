@@ -54,7 +54,7 @@ export class MatchService {
     }];
     this.saveMatches(matches);
   }
-
+ 
   updateMatch(match: Match): void {
     const matches = this.matchesSubject.value.map(m => 
       m.id === match.id ? {
