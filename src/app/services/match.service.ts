@@ -19,9 +19,10 @@ export class MatchService {
       const data = localStorage.getItem(this.STORAGE_KEY);
       const matches = data ? JSON.parse(data) : [];
       
-      // Convert string dates back to Date objects
+      // Convert string dates back to Date objects and ensure status is set
       matches.forEach((m: Match) => {
         m.scheduled_at = new Date(m.scheduled_at);
+        m.status = m.status || 'scheduled';
       });
       
       this.matchesSubject.next(matches);
@@ -33,21 +34,33 @@ export class MatchService {
 
   private saveMatches(matches: Match[]): void {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(matches));
-      this.matchesSubject.next(matches);
+      // Ensure each match has a status before saving
+      const matchesWithStatus = matches.map(match => ({
+        ...match,
+        status: match.status || 'scheduled'
+      }));
+      
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(matchesWithStatus));
+      this.matchesSubject.next(matchesWithStatus);
     } catch (error) {
       console.error('Error saving matches:', error);
     }
   }
 
   addMatch(match: Match): void {
-    const matches = [...this.matchesSubject.value, match];
+    const matches = [...this.matchesSubject.value, {
+      ...match,
+      status: match.status || 'scheduled'
+    }];
     this.saveMatches(matches);
   }
 
   updateMatch(match: Match): void {
     const matches = this.matchesSubject.value.map(m => 
-      m.id === match.id ? match : m
+      m.id === match.id ? {
+        ...match,
+        status: match.status || 'scheduled'
+      } : m
     );
     this.saveMatches(matches);
   }
