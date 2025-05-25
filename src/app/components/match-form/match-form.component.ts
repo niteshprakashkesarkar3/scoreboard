@@ -12,127 +12,140 @@ import { TournamentService } from '../../services/tournament.service';
 import { StadiumService } from '../../services/stadium.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
+import { InputComponent } from '../shared/input/input.component';
+import { SelectComponent } from '../shared/select/select.component';
 
 @Component({
   selector: 'app-match-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    FormLayoutComponent, 
+    FormFieldComponent,
+    InputComponent,
+    SelectComponent
+  ],
   template: `
     <form #matchForm="ngForm">
       <app-form-layout
         itemName="Match"
         [isEditMode]="isEditMode"
-        [submitDisabled]="matchForm.invalid!"
+        [submitDisabled]="!matchForm.form.valid"
         (onSubmit)="onSubmit()"
         (onCancel)="onCancel()"
       >
         <app-form-field
           id="id"
           label="Match ID"
-          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          [showError]="!!(id.invalid && (id.dirty || id.touched))"
           errorMessage="Match ID is required"
         >
-          <input 
-            type="text" 
-            id="id" 
-            name="id" 
-            [(ngModel)]="match.id" 
-            required
+          <app-input
+            id="id"
+            name="id"
+            [(ngModel)]="match.id"
+            [required]="true"
             [readonly]="isEditMode"
-            #id="ngModel">
+            #id="ngModel"
+          ></app-input>
         </app-form-field>
 
         <app-form-field
           id="tournament_id"
           label="Tournament"
-          [showError]="tournament_id.invalid! && (tournament_id.dirty! || tournament_id.touched!)"
+          [showError]="!!(tournament_id.invalid && (tournament_id.dirty || tournament_id.touched))"
           errorMessage="Tournament is required"
         >
-          <select 
-            id="tournament_id" 
-            name="tournament_id" 
-            [(ngModel)]="match.tournament_id" 
-            required
+          <app-select
+            id="tournament_id"
+            name="tournament_id"
+            [(ngModel)]="match.tournament_id"
+            [required]="true"
+            placeholder="Select Tournament"
             (ngModelChange)="onTournamentChange()"
-            #tournament_id="ngModel">
-            <option value="">Select Tournament</option>
+            #tournament_id="ngModel"
+          >
             <option *ngFor="let tournament of tournaments" [value]="tournament.id">
               {{ tournament.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
 
         <app-form-field
           id="team1_id"
           label="Team 1"
-          [showError]="team1_id.invalid! && (team1_id.dirty! || team1_id.touched!)"
+          [showError]="!!(team1_id.invalid && (team1_id.dirty || team1_id.touched))"
           errorMessage="Team 1 is required"
         >
-          <select 
-            id="team1_id" 
-            name="team1_id" 
-            [(ngModel)]="match.team1_id" 
-            required
-            #team1_id="ngModel">
-            <option value="">Select Team 1</option>
+          <app-select
+            id="team1_id"
+            name="team1_id"
+            [(ngModel)]="match.team1_id"
+            [required]="true"
+            placeholder="Select Team 1"
+            #team1_id="ngModel"
+          >
             <option *ngFor="let team of availableTeams" [value]="team.id">
               {{ team.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
 
         <app-form-field
           id="team2_id"
           label="Team 2"
-          [showError]="team2_id.invalid! && (team2_id.dirty! || team2_id.touched!)"
+          [showError]="!!(team2_id.invalid && (team2_id.dirty || team2_id.touched))"
           errorMessage="Team 2 is required"
         >
-          <select 
-            id="team2_id" 
-            name="team2_id" 
-            [(ngModel)]="match.team2_id" 
-            required
-            #team2_id="ngModel">
-            <option value="">Select Team 2</option>
+          <app-select
+            id="team2_id"
+            name="team2_id"
+            [(ngModel)]="match.team2_id"
+            [required]="true"
+            placeholder="Select Team 2"
+            #team2_id="ngModel"
+          >
             <option *ngFor="let team of availableTeams" [value]="team.id">
               {{ team.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
 
         <app-form-field
           id="stadium_id"
           label="Stadium"
-          [showError]="stadium_id.invalid! && (stadium_id.dirty! || stadium_id.touched!)"
+          [showError]="!!(stadium_id.invalid && (stadium_id.dirty || stadium_id.touched))"
           errorMessage="Stadium is required"
         >
-          <select 
-            id="stadium_id" 
-            name="stadium_id" 
-            [(ngModel)]="match.stadium_id" 
-            required
-            #stadium_id="ngModel">
-            <option value="">Select Stadium</option>
+          <app-select
+            id="stadium_id"
+            name="stadium_id"
+            [(ngModel)]="match.stadium_id"
+            [required]="true"
+            placeholder="Select Stadium"
+            #stadium_id="ngModel"
+          >
             <option *ngFor="let stadium of stadiums" [value]="stadium.id">
               {{ stadium.name }}
             </option>
-          </select>
+          </app-select>
         </app-form-field>
 
         <app-form-field
           id="scheduled_at"
           label="Scheduled At"
-          [showError]="scheduled_at.invalid! && (scheduled_at.dirty! || scheduled_at.touched!)"
+          [showError]="!!(scheduled_at.invalid && (scheduled_at.dirty || scheduled_at.touched))"
           errorMessage="Schedule date and time is required"
         >
-          <input 
-            type="datetime-local" 
-            id="scheduled_at" 
-            name="scheduled_at" 
-            [ngModel]="match.scheduled_at | date:'yyyy-MM-ddTHH:mm'"
-            (ngModelChange)="match.scheduled_at = $event"
-            required
-            #scheduled_at="ngModel">
+          <app-input
+            type="datetime-local"
+            id="scheduled_at"
+            name="scheduled_at"
+            [(ngModel)]="match.scheduled_at"
+            [required]="true"
+            #scheduled_at="ngModel"
+          ></app-input>
         </app-form-field>
       </app-form-layout>
     </form>
