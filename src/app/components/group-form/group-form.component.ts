@@ -1,22 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Group } from '../../models/group.model';
 import { Tournament } from '../../models/tournament.model';
 import { GroupService } from '../../services/group.service';
 import { TournamentService } from '../../services/tournament.service';
+import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
+import { FormFieldComponent } from '../shared/form-field/form-field.component';
 
 @Component({
   selector: 'app-group-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FormLayoutComponent, FormFieldComponent],
   template: `
-    <div class="group-form-container">
-      <h2>{{ isEditMode ? 'Edit' : 'Add' }} Group</h2>
-      <form (ngSubmit)="onSubmit()" #form="ngForm">
-        <div class="form-group">
-          <label for="id">Group ID</label>
+    <form #groupForm="ngForm">
+      <app-form-layout
+        itemName="Group"
+        [isEditMode]="isEditMode"
+        [submitDisabled]="groupForm.invalid!"
+        (onSubmit)="onSubmit()"
+        (onCancel)="onCancel()"
+      >
+        <app-form-field
+          id="id"
+          label="Group ID"
+          [showError]="id.invalid! && (id.dirty! || id.touched!)"
+          errorMessage="Group ID is required"
+        >
           <input 
             type="text" 
             id="id" 
@@ -25,13 +36,14 @@ import { TournamentService } from '../../services/tournament.service';
             required
             [readonly]="isEditMode"
             #id="ngModel">
-          <div class="error" *ngIf="id.invalid && (id.dirty || id.touched)">
-            Group ID is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="name">Group Name</label>
+        <app-form-field
+          id="name"
+          label="Group Name"
+          [showError]="name.invalid! && (name.dirty! || name.touched!)"
+          errorMessage="Group name is required"
+        >
           <input 
             type="text" 
             id="name" 
@@ -39,13 +51,14 @@ import { TournamentService } from '../../services/tournament.service';
             [(ngModel)]="group.name" 
             required
             #name="ngModel">
-          <div class="error" *ngIf="name.invalid && (name.dirty || name.touched)">
-            Group name is required
-          </div>
-        </div>
+        </app-form-field>
 
-        <div class="form-group">
-          <label for="tournamentId">Tournament</label>
+        <app-form-field
+          id="tournamentId"
+          label="Tournament"
+          [showError]="tournamentId.invalid! && (tournamentId.dirty! || tournamentId.touched!)"
+          errorMessage="Tournament is required"
+        >
           <select 
             id="tournamentId" 
             name="tournamentId" 
@@ -57,90 +70,14 @@ import { TournamentService } from '../../services/tournament.service';
               {{ tournament.name }}
             </option>
           </select>
-          <div class="error" *ngIf="tournamentId.invalid && (tournamentId.dirty || tournamentId.touched)">
-            Tournament is required
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" [disabled]="form.invalid">{{ isEditMode ? 'Update' : 'Save' }} Group</button>
-          <button type="button" (click)="onCancel()">Cancel</button>
-        </div>
-      </form>
-    </div>
-  `,
-  styles: [`
-    .group-form-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-
-    input[readonly] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
-    .error {
-      color: #d32f2f;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: flex-end;
-      margin-top: 2rem;
-    }
-
-    button {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    button[type="submit"] {
-      background-color: #1B5E20;
-      color: white;
-    }
-
-    button[type="submit"]:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
-
-    button[type="button"] {
-      background-color: #f5f5f5;
-      color: #333;
-    }
-  `]
+        </app-form-field>
+      </app-form-layout>
+    </form>
+  `
 })
 export class GroupFormComponent implements OnInit {
+  @ViewChild('groupForm') groupForm!: NgForm;
+
   group: Group = {
     id: '',
     name: '',
@@ -177,12 +114,14 @@ export class GroupFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.isEditMode) {
-      this.groupService.updateGroup(this.group);
-    } else {
-      this.groupService.addGroup(this.group);
+    if (this.groupForm.valid) {
+      if (this.isEditMode) {
+        this.groupService.updateGroup(this.group);
+      } else {
+        this.groupService.addGroup(this.group);
+      }
+      this.router.navigate(['/groups']);
     }
-    this.router.navigate(['/groups']);
   }
 
   onCancel(): void {
