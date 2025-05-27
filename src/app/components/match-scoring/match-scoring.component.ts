@@ -34,11 +34,13 @@ import { ButtonComponent } from '../shared/button/button.component';
               ({{ innings.overs }} ov)
             </span>
           </div>
-          <a [routerLink]="['/matches', match.id, 'innings', innings.id]" *ngIf="innings.status === 'in_progress'">
-            <app-button variant="primary">
-              Continue Scoring
-            </app-button>
-          </a>
+          <app-button 
+            variant="primary" 
+            (onClick)="continueInnings(innings)"
+            *ngIf="innings.status === 'in_progress'"
+          >
+            Continue Scoring
+          </app-button>
         </div>
       </div>
 
@@ -189,6 +191,10 @@ export class MatchScoringComponent implements OnInit {
 
   get hasInProgressInnings(): boolean {
     return this.matchInnings.some(i => i.status === 'in_progress');
+  }
+
+  continueInnings(innings: Innings): void {
+    this.router.navigate(['/matches', this.match.id, 'innings', innings.id]);
   }
 
   startNewInnings(): void {
