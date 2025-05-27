@@ -14,6 +14,25 @@ import { ButtonComponent } from '../shared/button/button.component';
 import { SelectComponent } from '../shared/select/select.component';
 import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component';
 
+interface BowlerStats {
+  id: string;
+  name: string;
+  overs: number;
+  maidens: number;
+  runs: number;
+  wickets: number;
+  economy: number;
+}
+
+interface OverStats {
+  overNumber: number;
+  bowlerId: string;
+  bowlerName: string;
+  runs: number;
+  wickets: number;
+  balls: Ball[];
+}
+
 @Component({
   selector: 'app-innings-scoring',
   standalone: true,
@@ -34,8 +53,50 @@ import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component'
         </div>
       </div>
 
+      <div class="bowling-stats">
+        <h3>Bowling Statistics</h3>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Bowler</th>
+              <th>O</th>
+              <th>M</th>
+              <th>R</th>
+              <th>W</th>
+              <th>Econ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let bowler of getBowlerStats()">
+              <td>{{ bowler.name }}</td>
+              <td>{{ bowler.overs }}</td>
+              <td>{{ bowler.maidens }}</td>
+              <td>{{ bowler.runs }}</td>
+              <td>{{ bowler.wickets }}</td>
+              <td>{{ bowler.economy | number:'1.1-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="over-by-over">
+        <h3>Over by Over</h3>
+        <div class="over-details" *ngFor="let over of getOverByOverStats()">
+          <div class="over-header">
+            <span class="over-number">Over {{ over.overNumber + 1 }}</span>
+            <span class="bowler-name">{{ over.bowlerName }}</span>
+            <span class="over-summary">{{ over.runs }} runs, {{ over.wickets }} wickets</span>
+          </div>
+          <div class="balls-container">
+            <div *ngFor="let ball of over.balls" class="ball">
+              {{ getBallDisplay(ball) }}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="current-over">
-        <h3>Over {{ currentOver }}</h3>
+        <h3>Over {{ currentOver + 1 }}</h3>
         <div class="balls-container">
           <div *ngFor="let ball of currentOverBalls" class="ball">
             {{ getBallDisplay(ball) }}
@@ -142,6 +203,64 @@ import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component'
       font-size: 1.25rem;
       color: #666;
       margin-left: 1rem;
+    }
+
+    .bowling-stats {
+      margin-bottom: 2rem;
+    }
+
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    .stats-table th,
+    .stats-table td {
+      padding: 0.75rem;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .stats-table th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+
+    .stats-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .over-by-over {
+      margin-bottom: 2rem;
+    }
+
+    .over-details {
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .over-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .over-number {
+      font-weight: bold;
+      color: #1B5E20;
+    }
+
+    .bowler-name {
+      color: #666;
+    }
+
+    .over-summary {
+      font-weight: 500;
     }
 
     .current-over {
@@ -258,7 +377,7 @@ export class InningsScoringComponent implements OnInit {
       this.loadPlayers();
     } else {
       this.router.navigate(['/matches']);
-      return; 
+      return;
     }
 
     this.teamService.teams$.subscribe(teams => {
@@ -266,7 +385,93 @@ export class InningsScoringComponent implements OnInit {
     });
   }
 
+  getBowlerStats(): BowlerStats[] {
+    const balls = this.ballService.getBallsByInnings(this.innings.id);
+    const bowlerStats = new Map<string, BowlerStats>();
 
+    balls.forEach(ball => {
+      const bowler = this.availableBowlers.find(b => b.id === ball.bowler_id);
+      if (!bowler) return;
+
+      const stats = bowlerStats.get(bowler.id) || {
+        id: bowler.id,
+        name: bowler.name,
+        overs: 0,
+        maidens: 0,
+        runs: 0,
+        wickets: 0,
+        economy: 0
+      };
+
+      // Update stats
+      stats.runs += ball.runs + ball.extras;
+      if (ball.outcome === 'wicket') stats.wickets++;
+
+      // Calculate overs
+      const completedOvers = Math.floor(balls.filter(b => b.bowler_id === bowler.id).length / 6);
+      const remainingBalls = balls.filter(b => b.bowler_id === bowler.id).length % 6;
+      stats.overs = completedOvers + (remainingBalls / 10);
+
+      // Calculate economy
+      stats.economy = stats.runs / stats.overs;
+
+      bowlerStats.set(bowler.id, stats);
+    });
+
+    // Calculate maidens
+    Array.from(bowlerStats.values()).forEach(stats => {
+      const bowlerBalls = balls.filter(b => b.bowler_id === stats.id);
+      const overs = this.groupBallsByOver(bowlerBalls);
+      stats.maidens = overs.filter(over => 
+        over.every(ball => ball.runs === 0 && ball.extras === 0)
+      ).length;
+    });
+
+    return Array.from(bowlerStats.values());
+  }
+
+  getOverByOverStats(): OverStats[] {
+    const balls = this.ballService.getBallsByInnings(this.innings.id);
+    const overs: OverStats[] = [];
+
+    for (let i = 0; i <= this.currentOver; i++) {
+      const overBalls = balls.filter(b => Math.floor(b.over_number) === i);
+      if (overBalls.length === 0) continue;
+
+      const bowler = this.availableBowlers.find(b => b.id === overBalls[0].bowler_id);
+      if (!bowler) continue;
+
+      overs.push({
+        overNumber: i,
+        bowlerId: bowler.id,
+        bowlerName: bowler.name,
+        runs: overBalls.reduce((sum, ball) => sum + ball.runs + ball.extras, 0),
+        wickets: overBalls.filter(b => b.outcome === 'wicket').length,
+        balls: overBalls
+      });
+    }
+
+    return overs;
+  }
+
+  private groupBallsByOver(balls: Ball[]): Ball[][] {
+    const overs: Ball[][] = [];
+    let currentOver: Ball[] = [];
+
+    balls.forEach(ball => {
+      if (currentOver.length === 6) {
+        overs.push(currentOver);
+        currentOver = [];
+      }
+      currentOver.push(ball);
+    });
+
+    if (currentOver.length > 0) {
+      overs.push(currentOver);
+    }
+
+    return overs;
+  }
 
   loadInnings(): void {
     this.matchInnings = this.inningsService.getInningsByMatch(this.route.snapshot.paramMap.get('id') || '');
