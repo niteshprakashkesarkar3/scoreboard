@@ -49,7 +49,7 @@ interface OverStats {
         <h2>{{ getBattingTeamName() }} Innings</h2>
         <div class="score-summary">
           <span class="total-score">{{ innings.total_runs }}/{{ innings.wickets }}</span>
-          <span class="overs">{{ innings.overs | decimal:1,1 }} overs</span>
+          <span class="overs">{{ innings.overs | decimal:1:1 }} overs</span>
         </div>
       </div>
 
