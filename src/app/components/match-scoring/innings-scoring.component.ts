@@ -244,13 +244,14 @@ export class InningsScoringComponent implements OnInit {
 
   ngOnInit(): void {
     const inningsId = this.route.snapshot.paramMap.get('inningsId');
-    if (!inningsId) {
+    const matchId = this.route.snapshot.paramMap.get('id') || '';
+    if (!inningsId || !matchId) {
       this.router.navigate(['/matches']);
       return;
     }
 
     this.loadInnings();
-    const innings = this.inningsService.getInningsByMatch(inningsId).find(i => i.id === inningsId);
+    const innings = this.inningsService.getInningsByMatch(matchId).find(i => i.id === inningsId);
     if (innings) {
       this.innings = innings;
       this.loadCurrentOver();
