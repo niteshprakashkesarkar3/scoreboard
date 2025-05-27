@@ -258,7 +258,7 @@ export class InningsScoringComponent implements OnInit {
       this.loadPlayers();
     } else {
       this.router.navigate(['/matches']);
-      return;
+      return; 
     }
 
     this.teamService.teams$.subscribe(teams => {
