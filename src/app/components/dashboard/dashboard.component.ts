@@ -17,6 +17,25 @@ import { CardListLayoutComponent } from '../shared/card-list-layout/card-list-la
   template: `
     <div class="dashboard-container">
       <app-card-list-layout
+        title="Live Matches"
+        (onViewAll)="navigateTo('/matches')"
+      >
+        <app-card
+          *ngFor="let match of liveMatches"
+          (click)="navigateToMatch(match)"
+        >
+          <div class="teams">
+            <span>{{ getTeamName(match.team1_id) }}</span>
+            <span class="vs">vs</span>
+            <span>{{ getTeamName(match.team2_id) }}</span>
+          </div>
+          <p class="venue">{{ getStadiumName(match.stadium_id) }}</p>
+          <p class="date">{{ match.scheduled_at | date:'medium' }}</p>
+          <span class="status-badge in_progress">Live</span>
+        </app-card>
+      </app-card-list-layout>
+
+      <app-card-list-layout
         title="Tournaments"
         (onViewAll)="navigateTo('/tournaments')"
       >
@@ -37,7 +56,7 @@ import { CardListLayoutComponent } from '../shared/card-list-layout/card-list-la
         (onViewAll)="navigateTo('/matches')"
       >
         <app-card
-          *ngFor="let match of matches"
+          *ngFor="let match of upcomingMatches"
           (click)="navigateTo('/matches/edit/' + match.id)"
         >
           <div class="teams">
@@ -102,6 +121,12 @@ import { CardListLayoutComponent } from '../shared/card-list-layout/card-list-la
       color: #c62828;
     }
 
+    .status-badge.in_progress {
+      background-color: #ff5722;
+      color: white;
+      animation: pulse 1.5s infinite;
+    }
+
     .teams {
       display: flex;
       justify-content: space-between;
@@ -129,6 +154,12 @@ import { CardListLayoutComponent } from '../shared/card-list-layout/card-list-la
       font-weight: 500;
     }
 
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
+
     @media (max-width: 768px) {
       .dashboard-container {
         padding: 1rem;
@@ -140,6 +171,8 @@ export class DashboardComponent implements OnInit {
   tournaments: Tournament[] = [];
   matches: Match[] = [];
   teams: Team[] = [];
+  liveMatches: Match[] = [];
+  upcomingMatches: Match[] = [];
 
   constructor(
     private dashboardService: DashboardService,
@@ -151,8 +184,11 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.dashboardService.getDashboardData().subscribe(data => {
       this.tournaments = data.tournaments;
-      this.matches = data.matches;
       this.teams = data.teams;
+      
+      // Filter matches by status
+      this.liveMatches = data.matches.filter(m => m.status === 'in_progress');
+      this.upcomingMatches = data.matches.filter(m => m.status === 'scheduled');
     });
   }
 
@@ -190,5 +226,9 @@ export class DashboardComponent implements OnInit {
 
   navigateTo(path: string): void {
     this.router.navigate([path]);
+  }
+
+  navigateToMatch(match: Match): void {
+    this.router.navigate(['/matches', match.id, 'scoring']);
   }
 }
