@@ -49,7 +49,7 @@ interface OverStats {
         <h2>{{ getBattingTeamName() }} Innings</h2>
         <div class="score-summary">
           <span class="total-score">{{ innings.total_runs }}/{{ innings.wickets }}</span>
-          <span class="overs">{{ innings.overs | number : '1.1-1' }} overs</span>
+          <span class="overs">{{ getFormattedOvers(innings.overs) }} overs</span>
         </div>
       </div>
 
@@ -69,7 +69,7 @@ interface OverStats {
           <tbody>
             <tr *ngFor="let bowler of getBowlerStats()">
               <td>{{ bowler.name }}</td>
-              <td>{{ bowler.overs }}</td>
+              <td>{{ getFormattedOvers(bowler.overs) }}</td>
               <td>{{ bowler.maidens }}</td>
               <td>{{ bowler.runs }}</td>
               <td>{{ bowler.wickets }}</td>
@@ -159,7 +159,7 @@ interface OverStats {
           <app-button 
             variant="primary" 
             (onClick)="endOver()"
-            [disabled]="currentOverBalls.length < 6"
+            [disabled]="getValidBallsInCurrentOver() < 6"
           >
             End Over
           </app-button>
@@ -385,6 +385,18 @@ export class InningsScoringComponent implements OnInit {
     });
   }
 
+  getFormattedOvers(overs: number): string {
+    const completedOvers = Math.floor(overs);
+    const validBalls = Math.round((overs - completedOvers) * 10);
+    return `${completedOvers}.${validBalls}`;
+  }
+
+  getValidBallsInCurrentOver(): number {
+    return this.currentOverBalls.filter(ball => 
+      ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
+    ).length;
+  }
+
   getBowlerStats(): BowlerStats[] {
     const balls = this.ballService.getBallsByInnings(this.innings.id);
     const bowlerStats = new Map<string, BowlerStats>();
@@ -407,13 +419,17 @@ export class InningsScoringComponent implements OnInit {
       stats.runs += ball.runs + ball.extras;
       if (ball.outcome === 'wicket') stats.wickets++;
 
-      // Calculate overs
-      const completedOvers = Math.floor(balls.filter(b => b.bowler_id === bowler.id).length / 6);
-      const remainingBalls = balls.filter(b => b.bowler_id === bowler.id).length % 6;
-      stats.overs = completedOvers + (remainingBalls / 10);
+      // Calculate valid balls for overs
+      const validBalls = balls.filter(b => 
+        b.bowler_id === bowler.id && 
+        b.outcome !== 'wide' && 
+        b.outcome !== 'no_ball'
+      ).length;
+
+      stats.overs = validBalls / 6;
 
       // Calculate economy
-      stats.economy = stats.runs / stats.overs;
+      stats.economy = stats.overs > 0 ? stats.runs / stats.overs : 0;
 
       bowlerStats.set(bowler.id, stats);
     });
@@ -457,13 +473,19 @@ export class InningsScoringComponent implements OnInit {
   private groupBallsByOver(balls: Ball[]): Ball[][] {
     const overs: Ball[][] = [];
     let currentOver: Ball[] = [];
+    let validBallCount = 0;
 
     balls.forEach(ball => {
-      if (currentOver.length === 6) {
+      if (validBallCount === 6) {
         overs.push(currentOver);
         currentOver = [];
+        validBallCount = 0;
       }
+
       currentOver.push(ball);
+      if (ball.outcome !== 'wide' && ball.outcome !== 'no_ball') {
+        validBallCount++;
+      }
     });
 
     if (currentOver.length > 0) {
@@ -628,7 +650,7 @@ export class InningsScoringComponent implements OnInit {
 
   endOver(): void {
     if (!this.innings) return;
-    if (this.currentOverBalls.length === 6) {
+    if (this.getValidBallsInCurrentOver() === 6) {
       this.currentOver++;
       this.currentOverBalls = [];
       this.currentBowler = '';
@@ -638,7 +660,14 @@ export class InningsScoringComponent implements OnInit {
   private updateInningsScore(runs: number): void {
     if (!this.innings) return;
     this.innings.total_runs += runs;
-    this.innings.overs = this.currentOver + (this.currentOverBalls.length / 6);
+
+    // Calculate overs based on valid balls only
+    const allBalls = this.ballService.getBallsByInnings(this.innings.id);
+    const validBalls = allBalls.filter(ball => 
+      ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
+    ).length;
+
+    this.innings.overs = validBalls / 6;
     this.inningsService.updateInnings(this.innings);
   }
 }
