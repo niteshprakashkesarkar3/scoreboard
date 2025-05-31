@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { combineLatest } from 'rxjs';
 import { Team } from '../../models/team.model';
+import { Tournament } from '../../models/tournament.model';
+import { Group } from '../../models/group.model';
 import { TeamService } from '../../services/team.service';
 import { TournamentService } from '../../services/tournament.service';
 import { GroupService } from '../../services/group.service';
@@ -20,7 +23,7 @@ import { TableComponent, TableColumn } from '../shared/table/table.component';
     >
       <app-table
         [columns]="columns"
-        [data]="teams"
+        [data]="transformedTeams"
         (onEdit)="onEdit($event)"
         (onDelete)="onDelete($event.id)"
       ></app-table>
@@ -29,6 +32,9 @@ import { TableComponent, TableColumn } from '../shared/table/table.component';
 })
 export class TeamListComponent implements OnInit {
   teams: Team[] = [];
+  tournaments: Tournament[] = [];
+  groups: Group[] = [];
+  transformedTeams: any[] = [];
   
   columns: TableColumn[] = [
     { key: 'id', header: 'ID' },
@@ -45,9 +51,34 @@ export class TeamListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.teamService.teams$.subscribe(teams => {
+    combineLatest([
+      this.teamService.teams$,
+      this.tournamentService.tournaments$,
+      this.groupService.groups$
+    ]).subscribe(([teams, tournaments, groups]) => {
       this.teams = teams;
+      this.tournaments = tournaments;
+      this.groups = groups;
+      this.updateTransformedTeams();
     });
+  }
+
+  updateTransformedTeams(): void {
+    this.transformedTeams = this.teams.map(team => ({
+      ...team,
+      tournamentId: this.getTournamentName(team.tournamentId),
+      groupId: this.getGroupName(team.groupId)
+    }));
+  }
+
+  getTournamentName(id: string): string {
+    const tournament = this.tournaments.find(t => t.id === id);
+    return tournament ? tournament.name : 'Unknown Tournament';
+  }
+
+  getGroupName(id: string): string {
+    const group = this.groups.find(g => g.id === id);
+    return group ? group.name : 'Unknown Group';
   }
 
   onEdit(team: Team): void {

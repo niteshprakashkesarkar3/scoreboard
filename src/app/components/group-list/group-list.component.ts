@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { combineLatest } from 'rxjs';
 import { Group } from '../../models/group.model';
+import { Tournament } from '../../models/tournament.model';
 import { GroupService } from '../../services/group.service';
 import { TournamentService } from '../../services/tournament.service';
 import { ListLayoutComponent } from '../shared/list-layout/list-layout.component';
@@ -19,7 +21,7 @@ import { TableComponent, TableColumn } from '../shared/table/table.component';
     >
       <app-table
         [columns]="columns"
-        [data]="groups"
+        [data]="transformedGroups"
         (onEdit)="onEdit($event)"
         (onDelete)="onDelete($event.id)"
       ></app-table>
@@ -28,6 +30,8 @@ import { TableComponent, TableColumn } from '../shared/table/table.component';
 })
 export class GroupListComponent implements OnInit {
   groups: Group[] = [];
+  tournaments: Tournament[] = [];
+  transformedGroups: any[] = [];
   
   columns: TableColumn[] = [
     { key: 'id', header: 'ID' },
@@ -42,9 +46,26 @@ export class GroupListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.groupService.groups$.subscribe(groups => {
+    combineLatest([
+      this.groupService.groups$,
+      this.tournamentService.tournaments$
+    ]).subscribe(([groups, tournaments]) => {
       this.groups = groups;
+      this.tournaments = tournaments;
+      this.updateTransformedGroups();
     });
+  }
+
+  updateTransformedGroups(): void {
+    this.transformedGroups = this.groups.map(group => ({
+      ...group,
+      tournamentId: this.getTournamentName(group.tournamentId)
+    }));
+  }
+
+  getTournamentName(id: string): string {
+    const tournament = this.tournaments.find(t => t.id === id);
+    return tournament ? tournament.name : 'Unknown Tournament';
   }
 
   onEdit(group: Group): void {

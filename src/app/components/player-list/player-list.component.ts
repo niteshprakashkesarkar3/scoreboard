@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { combineLatest } from 'rxjs';
 import { Player } from '../../models/player.model';
+import { Team } from '../../models/team.model';
 import { PlayerService } from '../../services/player.service';
 import { TeamService } from '../../services/team.service';
 import { ListLayoutComponent } from '../shared/list-layout/list-layout.component';
@@ -19,7 +21,7 @@ import { TableComponent, TableColumn } from '../shared/table/table.component';
     >
       <app-table
         [columns]="columns"
-        [data]="players"
+        [data]="transformedPlayers"
         (onEdit)="onEdit($event)"
         (onDelete)="onDelete($event.id)"
       ></app-table>
@@ -28,6 +30,8 @@ import { TableComponent, TableColumn } from '../shared/table/table.component';
 })
 export class PlayerListComponent implements OnInit {
   players: Player[] = [];
+  teams: Team[] = [];
+  transformedPlayers: any[] = [];
   
   columns: TableColumn[] = [
     { key: 'id', header: 'ID' },
@@ -44,9 +48,26 @@ export class PlayerListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.playerService.players$.subscribe(players => {
+    combineLatest([
+      this.playerService.players$,
+      this.teamService.teams$
+    ]).subscribe(([players, teams]) => {
       this.players = players;
+      this.teams = teams;
+      this.updateTransformedPlayers();
     });
+  }
+
+  updateTransformedPlayers(): void {
+    this.transformedPlayers = this.players.map(player => ({
+      ...player,
+      teamId: this.getTeamName(player.teamId)
+    }));
+  }
+
+  getTeamName(id: string): string {
+    const team = this.teams.find(t => t.id === id);
+    return team ? team.name : 'Unknown Team';
   }
 
   onEdit(player: Player): void {
