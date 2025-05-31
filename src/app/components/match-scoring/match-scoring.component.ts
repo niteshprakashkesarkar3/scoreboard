@@ -32,7 +32,7 @@ import { ButtonComponent } from '../shared/button/button.component';
             <h3>{{ getTeamName(innings.batting_team_id) }}</h3>
             <span class="score">
               {{ innings.total_runs }}/{{ innings.wickets }}
-              ({{ innings.overs }} ov)
+              ({{ innings.overs | number:'1.1-1' }} ov)
             </span>
           </div>
           <div class="innings-actions">
