@@ -143,11 +143,24 @@ interface OverStats {
       <div class="scoring-controls">
         <div class="batsman-bowler">
           <div class="player-select">
-            <label>Batsman</label>
+            <label>Striker</label>
             <app-select
               [(ngModel)]="currentBatsman"
               [required]="true"
-              placeholder="Select Batsman"
+              placeholder="Select Striker"
+            >
+              <option *ngFor="let player of availableBatsmen" [value]="player.id">
+                {{ player.name }}
+              </option>
+            </app-select>
+          </div>
+
+          <div class="player-select">
+            <label>Non-Striker</label>
+            <app-select
+              [(ngModel)]="nonStriker"
+              [required]="true"
+              placeholder="Select Non-Striker"
             >
               <option *ngFor="let player of availableBatsmen" [value]="player.id">
                 {{ player.name }}
@@ -188,6 +201,7 @@ interface OverStats {
 
         <div class="wicket-controls">
           <app-button variant="danger" (onClick)="showWicketDialog()">Wicket</app-button>
+          <app-button variant="secondary" (onClick)="swapBatsmen()">Swap Batsmen</app-button>
         </div>
 
         <div class="action-buttons">
@@ -354,6 +368,11 @@ interface OverStats {
       gap: 0.5rem;
     }
 
+    .wicket-controls {
+      display: flex;
+      gap: 1rem;
+    }
+
     .action-buttons {
       display: flex;
       justify-content: flex-end;
@@ -374,6 +393,10 @@ interface OverStats {
       .extras-buttons {
         grid-template-columns: repeat(3, 1fr);
       }
+
+      .wicket-controls {
+        flex-direction: column;
+      }
     }
   `]
 })
@@ -382,6 +405,7 @@ export class InningsScoringComponent implements OnInit {
   currentOver = 0;
   currentOverBalls: Ball[] = [];
   currentBatsman = '';
+  nonStriker = '';
   currentBowler = '';
   availableBatsmen: Player[] = [];
   availableBowlers: Player[] = [];
@@ -602,6 +626,7 @@ export class InningsScoringComponent implements OnInit {
     if (setupData) {
       const { striker_id, non_striker_id, opening_bowler_id } = JSON.parse(setupData);
       this.currentBatsman = striker_id;
+      this.nonStriker = non_striker_id;
       this.currentBowler = opening_bowler_id;
     }
   }
@@ -622,10 +647,14 @@ export class InningsScoringComponent implements OnInit {
     return ball.runs.toString();
   }
 
+  swapBatsmen(): void {
+    [this.currentBatsman, this.nonStriker] = [this.nonStriker, this.currentBatsman];
+  }
+
   addRuns(runs: number): void {
     if (!this.innings) return;
-    if (!this.currentBatsman || !this.currentBowler) {
-      alert('Please select both batsman and bowler');
+    if (!this.currentBatsman || !this.currentBowler || !this.nonStriker) {
+      alert('Please select both batsmen and bowler');
       return;
     }
 
@@ -645,6 +674,11 @@ export class InningsScoringComponent implements OnInit {
     this.ballService.addBall(ball);
     this.updateInningsScore(runs);
     this.loadCurrentOver();
+
+    // Swap batsmen if odd number of runs
+    if (runs % 2 === 1) {
+      this.swapBatsmen();
+    }
   }
 
   addExtra(type: BallOutcome): void {
@@ -713,6 +747,8 @@ export class InningsScoringComponent implements OnInit {
     this.updateInningsScore(details.runs || 0);
     this.hideWicketDialog();
     this.loadCurrentOver();
+    
+    // Clear out the dismissed batsman
     this.currentBatsman = '';
   }
 
@@ -737,6 +773,8 @@ export class InningsScoringComponent implements OnInit {
       this.currentOver++;
       this.currentOverBalls = [];
       this.currentBowler = '';
+      // Swap batsmen at the end of the over
+      this.swapBatsmen();
     }
   }
 
