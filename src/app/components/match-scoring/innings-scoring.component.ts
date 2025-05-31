@@ -14,6 +14,16 @@ import { ButtonComponent } from '../shared/button/button.component';
 import { SelectComponent } from '../shared/select/select.component';
 import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component';
 
+interface BatsmanStats {
+  id: string;
+  name: string;
+  runs: number;
+  balls: number;
+  fours: number;
+  sixes: number;
+  strikeRate: number;
+}
+
 interface BowlerStats {
   id: string;
   name: string;
@@ -51,6 +61,32 @@ interface OverStats {
           <span class="total-score">{{ innings.total_runs }}/{{ innings.wickets }}</span>
           <span class="overs">{{ getFormattedOvers(innings.overs) }} overs</span>
         </div>
+      </div>
+
+      <div class="batting-stats">
+        <h3>Batting Statistics</h3>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Batsman</th>
+              <th>R</th>
+              <th>B</th>
+              <th>4s</th>
+              <th>6s</th>
+              <th>SR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let batsman of getBatsmanStats()">
+              <td>{{ batsman.name }}</td>
+              <td>{{ batsman.runs }}</td>
+              <td>{{ batsman.balls }}</td>
+              <td>{{ batsman.fours }}</td>
+              <td>{{ batsman.sixes }}</td>
+              <td>{{ batsman.strikeRate | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="bowling-stats">
@@ -205,6 +241,7 @@ interface OverStats {
       margin-left: 1rem;
     }
 
+    .batting-stats,
     .bowling-stats {
       margin-bottom: 2rem;
     }
@@ -383,6 +420,44 @@ export class InningsScoringComponent implements OnInit {
     this.teamService.teams$.subscribe(teams => {
       this.teams = teams;
     });
+  }
+
+  getBatsmanStats(): BatsmanStats[] {
+    const balls = this.ballService.getBallsByInnings(this.innings.id);
+    const batsmanStats = new Map<string, BatsmanStats>();
+
+    balls.forEach(ball => {
+      if (!ball.batsman_id) return;
+
+      const batsman = this.availableBatsmen.find(b => b.id === ball.batsman_id);
+      if (!batsman) return;
+
+      const stats = batsmanStats.get(batsman.id) || {
+        id: batsman.id,
+        name: batsman.name,
+        runs: 0,
+        balls: 0,
+        fours: 0,
+        sixes: 0,
+        strikeRate: 0
+      };
+
+      if (ball.outcome !== 'wide' && ball.outcome !== 'no_ball') {
+        stats.balls++;
+      }
+
+      if (ball.outcome === 'regular') {
+        stats.runs += ball.runs;
+        if (ball.runs === 4) stats.fours++;
+        if (ball.runs === 6) stats.sixes++;
+      }
+
+      stats.strikeRate = (stats.balls > 0) ? (stats.runs / stats.balls) * 100 : 0;
+
+      batsmanStats.set(batsman.id, stats);
+    });
+
+    return Array.from(batsmanStats.values());
   }
 
   getFormattedOvers(overs: number): string {
