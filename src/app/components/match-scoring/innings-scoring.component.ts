@@ -59,7 +59,7 @@ interface OverStats {
         <h2>{{ getBattingTeamName() }} Innings</h2>
         <div class="score-summary">
           <span class="total-score">{{ innings.total_runs }}/{{ innings.wickets }}</span>
-          <span class="overs">{{ getFormattedOvers(innings.overs) }} overs</span>
+          <span class="overs">{{ getFormattedOvers() }} overs</span>
         </div>
       </div>
 
@@ -484,9 +484,10 @@ export class InningsScoringComponent implements OnInit {
     return Array.from(batsmanStats.values());
   }
 
-  getFormattedOvers(overs: number): string {
-    const completedOvers = Math.floor(overs);
-    const validBalls = Math.round((overs - completedOvers) * 10);
+  getFormattedOvers(overs?: number): string {
+    const oversToFormat = overs ?? this.innings.overs;
+    const completedOvers = Math.floor(oversToFormat);
+    const validBalls = Math.round((oversToFormat - completedOvers) * 6);
     return `${completedOvers}.${validBalls}`;
   }
 
@@ -525,7 +526,7 @@ export class InningsScoringComponent implements OnInit {
         b.outcome !== 'no_ball'
       ).length;
 
-      stats.overs = validBalls / 6;
+      stats.overs = Math.floor(validBalls / 6) + (validBalls % 6) / 6;
 
       // Calculate economy
       stats.economy = stats.overs > 0 ? stats.runs / stats.overs : 0;
@@ -788,7 +789,7 @@ export class InningsScoringComponent implements OnInit {
       ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
     ).length;
 
-    this.innings.overs = validBalls / 6;
+    this.innings.overs = Math.floor(validBalls / 6) + (validBalls % 6) / 6;
     this.inningsService.updateInnings(this.innings);
   }
 }
