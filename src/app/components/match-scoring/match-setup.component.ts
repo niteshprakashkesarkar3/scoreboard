@@ -50,6 +50,10 @@ interface MatchSetup extends Match {
             placeholder="Select Total Overs"
             #total_overs="ngModel"
           >
+            <option value="1">1 Over</option>
+            <option value="2">2 Overs</option>
+            <option value="3">3 Overs</option>
+            <option value="4">4 Overs</option>
             <option value="5">5 Overs</option>
             <option value="10">10 Overs</option>
             <option value="20">20 Overs (T20)</option>
