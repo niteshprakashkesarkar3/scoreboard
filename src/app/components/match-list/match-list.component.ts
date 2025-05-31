@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { combineLatest } from 'rxjs';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
+import { Tournament } from '../../models/tournament.model';
+import { Stadium } from '../../models/stadium.model';
 import { MatchService } from '../../services/match.service';
 import { TeamService } from '../../services/team.service';
 import { TournamentService } from '../../services/tournament.service';
@@ -23,13 +26,7 @@ import { ButtonComponent } from '../shared/button/button.component';
     >
       <app-table
         [columns]="columns"
-        [data]="matches.map(match => ({
-          ...match,
-          team1_id: getTeamName(match.team1_id),
-          team2_id: getTeamName(match.team2_id),
-          tournament_id: getTournamentName(match.tournament_id),
-          stadium_id: getStadiumName(match.stadium_id)
-        }))"
+        [data]="transformedMatches"
         (onEdit)="onEdit($event)"
         (onDelete)="onDelete($event.id)"
       >
@@ -56,6 +53,9 @@ import { ButtonComponent } from '../shared/button/button.component';
 export class MatchListComponent implements OnInit {
   matches: Match[] = [];
   teams: Team[] = [];
+  tournaments: Tournament[] = [];
+  stadiums: Stadium[] = [];
+  transformedMatches: any[] = [];
   
   columns: TableColumn[] = [
     { key: 'id', header: 'ID' },
@@ -76,13 +76,28 @@ export class MatchListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.matchService.matches$.subscribe(matches => {
+    combineLatest([
+      this.matchService.matches$,
+      this.teamService.teams$,
+      this.tournamentService.tournaments$,
+      this.stadiumService.stadiums$
+    ]).subscribe(([matches, teams, tournaments, stadiums]) => {
       this.matches = matches;
-    });
-
-    this.teamService.teams$.subscribe(teams => {
       this.teams = teams;
+      this.tournaments = tournaments;
+      this.stadiums = stadiums;
+      this.updateTransformedMatches();
     });
+  }
+
+  updateTransformedMatches(): void {
+    this.transformedMatches = this.matches.map(match => ({
+      ...match,
+      team1_id: this.getTeamName(match.team1_id),
+      team2_id: this.getTeamName(match.team2_id),
+      tournament_id: this.getTournamentName(match.tournament_id),
+      stadium_id: this.getStadiumName(match.stadium_id)
+    }));
   }
 
   getTeamName(id: string): string {
@@ -91,25 +106,13 @@ export class MatchListComponent implements OnInit {
   }
 
   getTournamentName(id: string): string {
-    let name = 'Unknown Tournament';
-    this.tournamentService.tournaments$.subscribe(tournaments => {
-      const tournament = tournaments.find(t => t.id === id);
-      if (tournament) {
-        name = tournament.name;
-      }
-    });
-    return name;
+    const tournament = this.tournaments.find(t => t.id === id);
+    return tournament ? tournament.name : 'Unknown Tournament';
   }
 
   getStadiumName(id: string): string {
-    let name = 'Unknown Stadium';
-    this.stadiumService.stadiums$.subscribe(stadiums => {
-      const stadium = stadiums.find(s => s.id === id);
-      if (stadium) {
-        name = stadium.name;
-      }
-    });
-    return name;
+    const stadium = this.stadiums.find(s => s.id === id);
+    return stadium ? stadium.name : 'Unknown Stadium';
   }
 
   onEdit(match: Match): void {
