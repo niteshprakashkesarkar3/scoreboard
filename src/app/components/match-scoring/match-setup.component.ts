@@ -4,11 +4,19 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Match } from '../../models/match.model';
 import { Team } from '../../models/team.model';
+import { Player } from '../../models/player.model';
 import { MatchService } from '../../services/match.service';
 import { TeamService } from '../../services/team.service';
+import { PlayerService } from '../../services/player.service';
 import { FormLayoutComponent } from '../shared/form-layout/form-layout.component';
 import { FormFieldComponent } from '../shared/form-field/form-field.component';
 import { SelectComponent } from '../shared/select/select.component';
+
+interface MatchSetup extends Match {
+  striker_id?: string;
+  non_striker_id?: string;
+  opening_bowler_id?: string;
+}
 
 @Component({
   selector: 'app-match-setup',
@@ -61,6 +69,7 @@ import { SelectComponent } from '../shared/select/select.component';
             [(ngModel)]="match.toss_winner_id"
             [required]="true"
             placeholder="Select Toss Winner"
+            (ngModelChange)="onTossWinnerChange()"
             #toss_winner="ngModel"
           >
             <option [value]="match.team1_id">{{ getTeamName(match.team1_id) }}</option>
@@ -80,10 +89,71 @@ import { SelectComponent } from '../shared/select/select.component';
             [(ngModel)]="match.toss_decision"
             [required]="true"
             placeholder="Select Decision"
+            (ngModelChange)="onTossDecisionChange()"
             #toss_decision="ngModel"
           >
             <option value="bat">Bat</option>
             <option value="bowl">Bowl</option>
+          </app-select>
+        </app-form-field>
+
+        <app-form-field
+          id="striker"
+          label="Striker"
+          [showError]="!!(striker.invalid && (striker.dirty || striker.touched))"
+          errorMessage="Striker is required"
+        >
+          <app-select
+            id="striker"
+            name="striker"
+            [(ngModel)]="match.striker_id"
+            [required]="true"
+            placeholder="Select Striker"
+            #striker="ngModel"
+          >
+            <option *ngFor="let player of battingTeamPlayers" [value]="player.id">
+              {{ player.name }}
+            </option>
+          </app-select>
+        </app-form-field>
+
+        <app-form-field
+          id="non_striker"
+          label="Non-Striker"
+          [showError]="!!(non_striker.invalid && (non_striker.dirty || non_striker.touched))"
+          errorMessage="Non-striker is required"
+        >
+          <app-select
+            id="non_striker"
+            name="non_striker"
+            [(ngModel)]="match.non_striker_id"
+            [required]="true"
+            placeholder="Select Non-Striker"
+            #non_striker="ngModel"
+          >
+            <option *ngFor="let player of battingTeamPlayers" [value]="player.id">
+              {{ player.name }}
+            </option>
+          </app-select>
+        </app-form-field>
+
+        <app-form-field
+          id="opening_bowler"
+          label="Opening Bowler"
+          [showError]="!!(opening_bowler.invalid && (opening_bowler.dirty || opening_bowler.touched))"
+          errorMessage="Opening bowler is required"
+        >
+          <app-select
+            id="opening_bowler"
+            name="opening_bowler"
+            [(ngModel)]="match.opening_bowler_id"
+            [required]="true"
+            placeholder="Select Opening Bowler"
+            #opening_bowler="ngModel"
+          >
+            <option *ngFor="let player of bowlingTeamPlayers" [value]="player.id">
+              {{ player.name }}
+            </option>
           </app-select>
         </app-form-field>
       </app-form-layout>
@@ -91,7 +161,7 @@ import { SelectComponent } from '../shared/select/select.component';
   `
 })
 export class MatchSetupComponent implements OnInit {
-  match: Match = {
+  match: MatchSetup = {
     id: '',
     team1_id: '',
     team2_id: '',
@@ -101,14 +171,20 @@ export class MatchSetupComponent implements OnInit {
     total_overs: 20,
     toss_winner_id: '',
     toss_decision: 'bat',
-    status: 'scheduled'
+    status: 'scheduled',
+    striker_id: '',
+    non_striker_id: '',
+    opening_bowler_id: ''
   };
 
   teams: Team[] = [];
+  battingTeamPlayers: Player[] = [];
+  bowlingTeamPlayers: Player[] = [];
 
   constructor(
     private matchService: MatchService,
     private teamService: TeamService,
+    private playerService: PlayerService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -120,6 +196,9 @@ export class MatchSetupComponent implements OnInit {
         const match = matches.find(m => m.id === id);
         if (match) {
           this.match = { ...match };
+          if (this.match.toss_winner_id) {
+            this.onTossWinnerChange();
+          }
         } else {
           this.router.navigate(['/matches']);
         }
@@ -136,12 +215,52 @@ export class MatchSetupComponent implements OnInit {
     return team ? team.name : 'Unknown Team';
   }
 
+  onTossWinnerChange(): void {
+    if (this.match.toss_winner_id) {
+      this.onTossDecisionChange();
+    }
+  }
+
+  onTossDecisionChange(): void {
+    if (!this.match.toss_winner_id || !this.match.toss_decision) return;
+
+    const battingTeamId = this.match.toss_decision === 'bat' 
+      ? this.match.toss_winner_id 
+      : (this.match.toss_winner_id === this.match.team1_id ? this.match.team2_id : this.match.team1_id);
+
+    const bowlingTeamId = battingTeamId === this.match.team1_id 
+      ? this.match.team2_id 
+      : this.match.team1_id;
+
+    // Reset player selections
+    this.match.striker_id = '';
+    this.match.non_striker_id = '';
+    this.match.opening_bowler_id = '';
+
+    // Load batting team players
+    this.battingTeamPlayers = this.playerService.getPlayersByTeam(battingTeamId)
+      .filter(p => p.status === 'playing' && 
+        (p.roles.includes('Batsman') || p.roles.includes('All Rounder') || p.roles.includes('Wicket Keeper')));
+
+    // Load bowling team players
+    this.bowlingTeamPlayers = this.playerService.getPlayersByTeam(bowlingTeamId)
+      .filter(p => p.status === 'playing' && 
+        (p.roles.includes('Bowler') || p.roles.includes('All Rounder')));
+  }
+
   onSubmit(): void {
-    console.log(this.match);
     // Convert total_overs to number
     this.match.total_overs = Number(this.match.total_overs);
     // Update match status to in_progress
     this.match.status = 'in_progress';
+    
+    // Store the match setup data in localStorage for use in innings scoring
+    localStorage.setItem('match_setup_' + this.match.id, JSON.stringify({
+      striker_id: this.match.striker_id,
+      non_striker_id: this.match.non_striker_id,
+      opening_bowler_id: this.match.opening_bowler_id
+    }));
+    
     this.matchService.updateMatch(this.match);
     this.router.navigate(['/matches', this.match.id, 'scoring']);
   }
