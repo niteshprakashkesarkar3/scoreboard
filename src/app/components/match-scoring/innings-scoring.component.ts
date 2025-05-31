@@ -22,6 +22,7 @@ interface BatsmanStats {
   fours: number;
   sixes: number;
   strikeRate: number;
+  isStriker: boolean;
 }
 
 interface BowlerStats {
@@ -78,7 +79,7 @@ interface OverStats {
           </thead>
           <tbody>
             <tr *ngFor="let batsman of getBatsmanStats()">
-              <td>{{ batsman.name }}</td>
+              <td>{{ batsman.name }}{{ batsman.isStriker ? '*' : '' }}</td>
               <td>{{ batsman.runs }}</td>
               <td>{{ batsman.balls }}</td>
               <td>{{ batsman.fours }}</td>
@@ -463,7 +464,8 @@ export class InningsScoringComponent implements OnInit {
         balls: 0,
         fours: 0,
         sixes: 0,
-        strikeRate: 0
+        strikeRate: 0,
+        isStriker: false
       };
 
       if (ball.outcome !== 'wide' && ball.outcome !== 'no_ball') {
@@ -477,6 +479,7 @@ export class InningsScoringComponent implements OnInit {
       }
 
       stats.strikeRate = (stats.balls > 0) ? (stats.runs / stats.balls) * 100 : 0;
+      stats.isStriker = stats.id === this.currentBatsman;
 
       batsmanStats.set(batsman.id, stats);
     });
@@ -489,12 +492,6 @@ export class InningsScoringComponent implements OnInit {
     const completedOvers = Math.floor(oversToFormat);
     const validBalls = Math.round((oversToFormat - completedOvers) * 6);
     return `${completedOvers}.${validBalls}`;
-  }
-
-  getValidBallsInCurrentOver(): number {
-    return this.currentOverBalls.filter(ball => 
-      ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
-    ).length;
   }
 
   getBowlerStats(): BowlerStats[] {
@@ -714,8 +711,8 @@ export class InningsScoringComponent implements OnInit {
 
   showWicketDialog(): void {
     if (!this.innings) return;
-    if (!this.currentBatsman || !this.currentBowler) {
-      alert('Please select both batsman and bowler');
+    if (!this.currentBatsman || !this.currentBowler || !this.nonStriker) {
+      alert('Please select both batsmen and bowler');
       return;
     }
     this.showingWicketDialog = true;
@@ -791,5 +788,11 @@ export class InningsScoringComponent implements OnInit {
 
     this.innings.overs = Math.floor(validBalls / 6) + (validBalls % 6) / 6;
     this.inningsService.updateInnings(this.innings);
+  }
+
+  getValidBallsInCurrentOver(): number {
+    return this.currentOverBalls.filter(ball => 
+      ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
+    ).length;
   }
 }
