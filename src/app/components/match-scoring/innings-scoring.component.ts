@@ -15,6 +15,36 @@ import { SelectComponent } from '../shared/select/select.component';
 import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component';
 import { RetireDialogComponent, RetireDetails } from './retire-dialog.component';
 
+interface BatsmanStats {
+  id: string;
+  name: string;
+  runs: number;
+  balls: number;
+  fours: number;
+  sixes: number;
+  strikeRate: number;
+  isStriker: boolean;
+}
+
+interface BowlerStats {
+  id: string;
+  name: string;
+  overs: number;
+  maidens: number;
+  runs: number;
+  wickets: number;
+  economy: number;
+}
+
+interface OverStats {
+  overNumber: number;
+  bowlerId: string;
+  bowlerName: string;
+  runs: number;
+  wickets: number;
+  balls: Ball[];
+}
+
 @Component({
   selector: 'app-innings-scoring',
   standalone: true,
