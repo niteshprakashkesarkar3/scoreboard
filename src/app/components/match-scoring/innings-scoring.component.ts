@@ -596,6 +596,14 @@ export class InningsScoringComponent implements OnInit {
       .filter(p => p.status === 'playing' && 
         (p.roles.includes('Bowler') || p.roles.includes('All Rounder'))
       );
+
+    // Load initial player selections from match setup
+    const setupData = localStorage.getItem('match_setup_' + this.innings.match_id);
+    if (setupData) {
+      const { striker_id, non_striker_id, opening_bowler_id } = JSON.parse(setupData);
+      this.currentBatsman = striker_id;
+      this.currentBowler = opening_bowler_id;
+    }
   }
 
   getBattingTeamName(): string {
