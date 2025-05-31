@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Match } from '../../models/match.model';
+import { Team } from '../../models/team.model';
 import { MatchService } from '../../services/match.service';
 import { TeamService } from '../../services/team.service';
 import { TournamentService } from '../../services/tournament.service';
@@ -22,7 +23,13 @@ import { ButtonComponent } from '../shared/button/button.component';
     >
       <app-table
         [columns]="columns"
-        [data]="matches"
+        [data]="matches.map(match => ({
+          ...match,
+          team1_id: getTeamName(match.team1_id),
+          team2_id: getTeamName(match.team2_id),
+          tournament_id: getTournamentName(match.tournament_id),
+          stadium_id: getStadiumName(match.stadium_id)
+        }))"
         (onEdit)="onEdit($event)"
         (onDelete)="onDelete($event.id)"
       >
@@ -48,6 +55,7 @@ import { ButtonComponent } from '../shared/button/button.component';
 })
 export class MatchListComponent implements OnInit {
   matches: Match[] = [];
+  teams: Team[] = [];
   
   columns: TableColumn[] = [
     { key: 'id', header: 'ID' },
@@ -71,6 +79,37 @@ export class MatchListComponent implements OnInit {
     this.matchService.matches$.subscribe(matches => {
       this.matches = matches;
     });
+
+    this.teamService.teams$.subscribe(teams => {
+      this.teams = teams;
+    });
+  }
+
+  getTeamName(id: string): string {
+    const team = this.teams.find(t => t.id === id);
+    return team ? team.name : 'Unknown Team';
+  }
+
+  getTournamentName(id: string): string {
+    let name = 'Unknown Tournament';
+    this.tournamentService.tournaments$.subscribe(tournaments => {
+      const tournament = tournaments.find(t => t.id === id);
+      if (tournament) {
+        name = tournament.name;
+      }
+    });
+    return name;
+  }
+
+  getStadiumName(id: string): string {
+    let name = 'Unknown Stadium';
+    this.stadiumService.stadiums$.subscribe(stadiums => {
+      const stadium = stadiums.find(s => s.id === id);
+      if (stadium) {
+        name = stadium.name;
+      }
+    });
+    return name;
   }
 
   onEdit(match: Match): void {
