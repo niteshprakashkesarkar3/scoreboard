@@ -13,36 +13,7 @@ import { TeamService } from '../../services/team.service';
 import { ButtonComponent } from '../shared/button/button.component';
 import { SelectComponent } from '../shared/select/select.component';
 import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component';
-
-interface BatsmanStats {
-  id: string;
-  name: string;
-  runs: number;
-  balls: number;
-  fours: number;
-  sixes: number;
-  strikeRate: number;
-  isStriker: boolean;
-}
-
-interface BowlerStats {
-  id: string;
-  name: string;
-  overs: number;
-  maidens: number;
-  runs: number;
-  wickets: number;
-  economy: number;
-}
-
-interface OverStats {
-  overNumber: number;
-  bowlerId: string;
-  bowlerName: string;
-  runs: number;
-  wickets: number;
-  balls: Ball[];
-}
+import { RetireDialogComponent, RetireDetails } from './retire-dialog.component';
 
 @Component({
   selector: 'app-innings-scoring',
@@ -52,7 +23,8 @@ interface OverStats {
     FormsModule, 
     ButtonComponent, 
     SelectComponent,
-    WicketDialogComponent
+    WicketDialogComponent,
+    RetireDialogComponent
   ],
   template: `
     <div class="innings-scoring-container" *ngIf="innings">
@@ -203,6 +175,7 @@ interface OverStats {
         <div class="wicket-controls">
           <app-button variant="danger" (onClick)="showWicketDialog()">Wicket</app-button>
           <app-button variant="secondary" (onClick)="swapBatsmen()">Swap Batsmen</app-button>
+          <app-button variant="secondary" (onClick)="showRetireDialog()">Retire Player</app-button>
         </div>
 
         <div class="action-buttons">
@@ -224,6 +197,16 @@ interface OverStats {
       (onConfirm)="handleWicket($event)"
       (onCancel)="hideWicketDialog()"
     ></app-wicket-dialog>
+
+    <app-retire-dialog
+      *ngIf="showingRetireDialog"
+      [currentBatsman]="currentBatsman"
+      [nonStriker]="nonStriker"
+      [availablePlayers]="getAvailableReplacements()"
+      [currentPlayers]="availableBatsmen"
+      (onConfirm)="handleRetire($event)"
+      (onCancel)="hideRetireDialog()"
+    ></app-retire-dialog>
   `,
   styles: [`
     .innings-scoring-container {
@@ -411,8 +394,10 @@ export class InningsScoringComponent implements OnInit {
   availableBatsmen: Player[] = [];
   availableBowlers: Player[] = [];
   showingWicketDialog = false;
+  showingRetireDialog = false;
   teams: Team[] = [];
   matchInnings: Innings[] = [];
+  retiredPlayers: string[] = [];
 
   constructor(
     private inningsService: InningsService,
@@ -794,5 +779,37 @@ export class InningsScoringComponent implements OnInit {
     return this.currentOverBalls.filter(ball => 
       ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
     ).length;
+  }
+
+  showRetireDialog(): void {
+    if (!this.innings) return;
+    if (!this.currentBatsman || !this.nonStriker) {
+      alert('Please select both batsmen');
+      return;
+    }
+    this.showingRetireDialog = true;
+  }
+
+  hideRetireDialog(): void {
+    this.showingRetireDialog = false;
+  }
+
+  getAvailableReplacements(): Player[] {
+    return this.availableBatsmen.filter(player => 
+      player.id !== this.currentBatsman && 
+      player.id !== this.nonStriker &&
+      !this.retiredPlayers.includes(player.id)
+    );
+  }
+
+  handleRetire(details: RetireDetails): void {
+    if (details.retiredPlayerId === this.currentBatsman) {
+      this.currentBatsman = details.replacementPlayerId;
+    } else {
+      this.nonStriker = details.replacementPlayerId;
+    }
+
+    this.retiredPlayers.push(details.retiredPlayerId);
+    this.hideRetireDialog();
   }
 }
