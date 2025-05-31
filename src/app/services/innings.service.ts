@@ -52,4 +52,9 @@ export class InningsService {
     );
     this.saveInnings(allInnings);
   }
+
+  deleteInnings(id: string): void {
+    const allInnings = this.inningsSubject.value.filter(i => i.id !== id);
+    this.saveInnings(allInnings);
+  }
 }

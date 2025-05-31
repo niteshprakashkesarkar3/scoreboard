@@ -8,6 +8,7 @@ import { Innings } from '../../models/innings.model';
 import { MatchService } from '../../services/match.service';
 import { TeamService } from '../../services/team.service';
 import { InningsService } from '../../services/innings.service';
+import { BallService } from '../../services/ball.service';
 import { ButtonComponent } from '../shared/button/button.component';
 
 @Component({
@@ -34,13 +35,21 @@ import { ButtonComponent } from '../shared/button/button.component';
               ({{ innings.overs }} ov)
             </span>
           </div>
-          <app-button 
-            variant="primary" 
-            (onClick)="continueInnings(innings)"
-            *ngIf="innings.status === 'in_progress'"
-          >
-            Continue Scoring
-          </app-button>
+          <div class="innings-actions">
+            <app-button 
+              variant="primary" 
+              (onClick)="continueInnings(innings)"
+              *ngIf="innings.status === 'in_progress'"
+            >
+              Continue Scoring
+            </app-button>
+            <app-button
+              variant="danger"
+              (onClick)="clearInnings(innings)"
+            >
+              Clear Innings
+            </app-button>
+          </div>
         </div>
       </div>
 
@@ -119,6 +128,11 @@ import { ButtonComponent } from '../shared/button/button.component';
       font-weight: bold;
     }
 
+    .innings-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
     .match-actions {
       display: flex;
       justify-content: center;
@@ -131,6 +145,10 @@ import { ButtonComponent } from '../shared/button/button.component';
       }
 
       .innings-cards {
+        flex-direction: column;
+      }
+
+      .innings-actions {
         flex-direction: column;
       }
     }
@@ -157,6 +175,7 @@ export class MatchScoringComponent implements OnInit {
     private matchService: MatchService,
     private teamService: TeamService,
     private inningsService: InningsService,
+    private ballService: BallService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -195,6 +214,28 @@ export class MatchScoringComponent implements OnInit {
 
   continueInnings(innings: Innings): void {
     this.router.navigate(['/matches', this.match.id, 'innings', innings.id]);
+  }
+
+  clearInnings(innings: Innings): void {
+    if (confirm('Are you sure you want to clear this innings? All scoring data will be lost.')) {
+      // Reset match status to scheduled
+      this.match.status = 'scheduled';
+      this.match.toss_winner_id = '';
+      this.match.toss_decision = 'bat';
+      this.matchService.updateMatch(this.match);
+
+      // Clear all balls for this innings
+      const balls = this.ballService.getBallsByInnings(innings.id);
+      balls.forEach(ball => {
+        this.ballService.deleteBall(ball.id);
+      });
+
+      // Remove the innings
+      this.inningsService.deleteInnings(innings.id);
+
+      // Navigate back to match setup
+      this.router.navigate(['/matches', this.match.id, 'setup']);
+    }
   }
 
   startNewInnings(): void {
