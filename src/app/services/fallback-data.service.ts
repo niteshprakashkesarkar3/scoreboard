@@ -6,7 +6,17 @@ import { Stadium } from '../models/stadium.model';
 import { Player } from '../models/player.model';
 import { Match } from '../models/match.model';
 import { Innings } from '../models/innings.model';
-import { Ball } from '../models/ball.model';
+import { Ball, BallOutcome } from '../models/ball.model';
+
+interface DummyBallData {
+  batsman: string;
+  bowler: string;
+  runs: number;
+  extras: number;
+  outcome: BallOutcome;
+  wicket_type?: 'caught' | 'lbw' | 'bowled' | 'stumped' | 'run_out' | 'hit_wicket';
+  fielder_id?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -532,7 +542,7 @@ export class FallbackDataService {
     let ballId = 1700000060000;
 
     // First Innings - Mumbai Indians batting
-    const miInnings = [
+    const miInnings: DummyBallData[] = [
       // Over 1 - Deepak Chahar bowling
       { batsman: '1700000040000', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
       { batsman: '1700000040000', bowler: '1700000041004', runs: 4, extras: 0, outcome: 'regular' },
@@ -701,7 +711,7 @@ export class FallbackDataService {
     ];
 
     // Second Innings - Chennai Super Kings batting
-    const cskInnings = [
+    const cskInnings: DummyBallData[] = [
       // Over 1 - Jasprit Bumrah bowling
       { batsman: '1700000041003', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
       { batsman: '1700000041003', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
