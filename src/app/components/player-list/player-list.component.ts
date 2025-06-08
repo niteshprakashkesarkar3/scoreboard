@@ -34,7 +34,6 @@ export class PlayerListComponent implements OnInit {
   transformedPlayers: any[] = [];
   
   columns: TableColumn[] = [
-    { key: 'id', header: 'ID' },
     { key: 'name', header: 'Name' },
     { key: 'roles', header: 'Roles' },
     { key: 'status', header: 'Status', type: 'status' },

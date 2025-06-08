@@ -29,7 +29,6 @@ export class TournamentListComponent implements OnInit {
   tournaments: Tournament[] = [];
   
   columns: TableColumn[] = [
-    { key: 'id', header: 'ID' },
     { key: 'name', header: 'Name' },
     { key: 'startDate', header: 'Start Date', type: 'date' },
     { key: 'endDate', header: 'End Date', type: 'date' },

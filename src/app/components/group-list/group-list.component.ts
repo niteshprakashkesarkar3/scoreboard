@@ -34,7 +34,6 @@ export class GroupListComponent implements OnInit {
   transformedGroups: any[] = [];
   
   columns: TableColumn[] = [
-    { key: 'id', header: 'ID' },
     { key: 'name', header: 'Name' },
     { key: 'tournamentId', header: 'Tournament' }
   ];

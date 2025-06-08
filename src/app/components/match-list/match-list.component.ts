@@ -58,7 +58,6 @@ export class MatchListComponent implements OnInit {
   transformedMatches: any[] = [];
   
   columns: TableColumn[] = [
-    { key: 'id', header: 'ID' },
     { key: 'tournament_id', header: 'Tournament' },
     { key: 'team1_id', header: 'Team 1' },
     { key: 'team2_id', header: 'Team 2' },

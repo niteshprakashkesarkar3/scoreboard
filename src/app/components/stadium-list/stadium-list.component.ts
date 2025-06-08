@@ -29,7 +29,6 @@ export class StadiumListComponent implements OnInit {
   stadiums: Stadium[] = [];
   
   columns: TableColumn[] = [
-    { key: 'id', header: 'ID' },
     { key: 'name', header: 'Name' },
     { key: 'address', header: 'Address' },
     { key: 'city', header: 'City' },

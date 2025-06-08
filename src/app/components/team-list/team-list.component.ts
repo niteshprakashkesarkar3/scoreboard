@@ -37,7 +37,6 @@ export class TeamListComponent implements OnInit {
   transformedTeams: any[] = [];
   
   columns: TableColumn[] = [
-    { key: 'id', header: 'ID' },
     { key: 'name', header: 'Name' },
     { key: 'tournamentId', header: 'Tournament' },
     { key: 'groupId', header: 'Group' }
