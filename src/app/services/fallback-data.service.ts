@@ -541,7 +541,7 @@ export class FallbackDataService {
     const balls: Ball[] = [];
     let ballId = 1700000060000;
 
-    // First Innings - Mumbai Indians batting
+    // First Innings - Mumbai Indians batting (Complete 20 overs = 120 balls + extras)
     const miInnings: DummyBallData[] = [
       // Over 1 - Deepak Chahar bowling
       { batsman: '1700000040000', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
@@ -710,7 +710,7 @@ export class FallbackDataService {
       { batsman: '1700000040009', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' }
     ];
 
-    // Second Innings - Chennai Super Kings batting
+    // Second Innings - Chennai Super Kings batting (Complete 20 overs = 120 balls + extras)
     const cskInnings: DummyBallData[] = [
       // Over 1 - Jasprit Bumrah bowling
       { batsman: '1700000041003', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
@@ -884,6 +884,7 @@ export class FallbackDataService {
     let timestamp = new Date('2024-01-20T14:35:00');
 
     miInnings.forEach((ballData, index) => {
+      // Check if we need to start a new over (after 6 valid balls)
       if (ballNumber > 6 && ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
         overNumber++;
         ballNumber = 1;
@@ -904,6 +905,7 @@ export class FallbackDataService {
         timestamp: new Date(timestamp.getTime() + index * 30000) // 30 seconds between balls
       });
 
+      // Only increment ball number for valid balls (not wides or no-balls)
       if (ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
         ballNumber++;
       }
@@ -915,6 +917,7 @@ export class FallbackDataService {
     timestamp = new Date('2024-01-20T17:00:00'); // Second innings starts later
 
     cskInnings.forEach((ballData, index) => {
+      // Check if we need to start a new over (after 6 valid balls)
       if (ballNumber > 6 && ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
         overNumber++;
         ballNumber = 1;
@@ -935,6 +938,7 @@ export class FallbackDataService {
         timestamp: new Date(timestamp.getTime() + index * 30000)
       });
 
+      // Only increment ball number for valid balls (not wides or no-balls)
       if (ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
         ballNumber++;
       }
