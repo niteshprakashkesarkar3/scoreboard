@@ -15,6 +15,7 @@ import { MatchFormComponent } from './components/match-form/match-form.component
 import { MatchScoringComponent } from './components/match-scoring/match-scoring.component';
 import { MatchSetupComponent } from './components/match-scoring/match-setup.component';
 import { InningsScoringComponent } from './components/match-scoring/innings-scoring.component';
+import { MatchStatisticsComponent } from './components/match-scoring/match-statistics.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -39,5 +40,6 @@ export const routes: Routes = [
   { path: 'matches/edit/:id', component: MatchFormComponent },
   { path: 'matches/:id/scoring', component: MatchScoringComponent },
   { path: 'matches/:id/setup', component: MatchSetupComponent },
-  { path: 'matches/:id/innings/:inningsId', component: InningsScoringComponent }
+  { path: 'matches/:id/innings/:inningsId', component: InningsScoringComponent },
+  { path: 'matches/:id/statistics', component: MatchStatisticsComponent }
 ];

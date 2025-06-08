@@ -26,6 +26,15 @@ import { ButtonComponent } from '../shared/button/button.component';
             Toss: {{ getTeamName(match.toss_winner_id) }} chose to {{ match.toss_decision }}
           </span>
         </p>
+        <div class="match-actions-header">
+          <app-button 
+            variant="secondary" 
+            (onClick)="viewStatistics()"
+            *ngIf="matchInnings.length > 0"
+          >
+            View Statistics
+          </app-button>
+        </div>
       </div>
 
       <!-- Match Results (when completed) -->
@@ -118,6 +127,7 @@ import { ButtonComponent } from '../shared/button/button.component';
     .match-header {
       margin-bottom: 2rem;
       text-align: center;
+      position: relative;
     }
 
     .match-header h2 {
@@ -132,6 +142,12 @@ import { ButtonComponent } from '../shared/button/button.component';
 
     .separator {
       margin: 0 0.5rem;
+    }
+
+    .match-actions-header {
+      position: absolute;
+      top: 0;
+      right: 0;
     }
 
     .match-results {
@@ -269,6 +285,15 @@ import { ButtonComponent } from '../shared/button/button.component';
     @media (max-width: 768px) {
       .match-scoring-container {
         padding: 1rem;
+      }
+
+      .match-header {
+        position: relative;
+      }
+
+      .match-actions-header {
+        position: static;
+        margin-top: 1rem;
       }
 
       .innings-cards {
@@ -434,6 +459,10 @@ export class MatchScoringComponent implements OnInit {
 
   getOtherTeamId(teamId: string): string {
     return teamId === this.match.team1_id ? this.match.team2_id : this.match.team1_id;
+  }
+
+  viewStatistics(): void {
+    this.router.navigate(['/matches', this.match.id, 'statistics']);
   }
 
   goBackToMatches(): void {
