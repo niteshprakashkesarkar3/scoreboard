@@ -38,15 +38,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="id"
           label="Match ID"
-          [showError]="!!(id.invalid && (id.dirty || id.touched))"
-          errorMessage="Match ID is required"
+          [showError]="false"
+          errorMessage=""
         >
           <app-input
             id="id"
             name="id"
             [(ngModel)]="match.id"
-            [required]="true"
-            [readonly]="isEditMode"
+            [readonly]="true"
             #id="ngModel"
           ></app-input>
         </app-form-field>
@@ -176,7 +175,7 @@ export class MatchFormComponent implements OnInit {
   @ViewChild('matchForm') matchForm!: NgForm;
 
   match: Match = {
-    id: '',
+    id: Date.now().toString(),
     team1_id: '',
     team2_id: '',
     tournament_id: '',

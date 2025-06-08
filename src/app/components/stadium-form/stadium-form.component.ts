@@ -30,15 +30,14 @@ import { InputComponent } from '../shared/input/input.component';
         <app-form-field
           id="id"
           label="Stadium ID"
-          [showError]="!!(id.invalid && (id.dirty || id.touched))"
-          errorMessage="Stadium ID is required"
+          [showError]="false"
+          errorMessage=""
         >
           <app-input
             id="id"
             name="id"
             [(ngModel)]="stadium.id"
-            [required]="true"
-            [readonly]="isEditMode"
+            [readonly]="true"
             #id="ngModel"
           ></app-input>
         </app-form-field>
@@ -178,7 +177,7 @@ export class StadiumFormComponent implements OnInit {
   @ViewChild('stadiumForm') stadiumForm!: NgForm;
 
   stadium: Stadium = {
-    id: '',
+    id: Date.now().toString(),
     name: '',
     address: '',
     city: '',

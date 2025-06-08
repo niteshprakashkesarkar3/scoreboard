@@ -34,15 +34,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="id"
           label="Group ID"
-          [showError]="!!(id.invalid && (id.dirty || id.touched))"
-          errorMessage="Group ID is required"
+          [showError]="false"
+          errorMessage=""
         >
           <app-input
             id="id"
             name="id"
             [(ngModel)]="group.id"
-            [required]="true"
-            [readonly]="isEditMode"
+            [readonly]="true"
             #id="ngModel"
           ></app-input>
         </app-form-field>
@@ -89,7 +88,7 @@ export class GroupFormComponent implements OnInit {
   @ViewChild('groupForm') groupForm!: NgForm;
 
   group: Group = {
-    id: '',
+    id: Date.now().toString(),
     name: '',
     tournamentId: ''
   };

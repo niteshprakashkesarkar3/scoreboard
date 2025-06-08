@@ -32,15 +32,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="id"
           label="Tournament ID"
-          [showError]="!!(id.invalid && (id.dirty || id.touched))"
-          errorMessage="Tournament ID is required"
+          [showError]="false"
+          errorMessage=""
         >
           <app-input
             id="id"
             name="id"
             [(ngModel)]="tournament.id"
-            [required]="true"
-            [readonly]="isEditMode"
+            [readonly]="true"
             #id="ngModel"
           ></app-input>
         </app-form-field>
@@ -120,7 +119,7 @@ export class TournamentFormComponent implements OnInit {
   @ViewChild('tournamentForm') tournamentForm!: NgForm;
 
   tournament: Tournament = {
-    id: '',
+    id: Date.now().toString(),
     name: '',
     startDate: new Date(),
     endDate: new Date(),

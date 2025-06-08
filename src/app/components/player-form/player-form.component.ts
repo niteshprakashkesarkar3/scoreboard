@@ -34,15 +34,14 @@ import { SelectComponent } from '../shared/select/select.component';
         <app-form-field
           id="id"
           label="Player ID"
-          [showError]="!!(id.invalid && (id.dirty || id.touched))"
-          errorMessage="Player ID is required"
+          [showError]="false"
+          errorMessage=""
         >
           <app-input
             id="id"
             name="id"
             [(ngModel)]="player.id"
-            [required]="true"
-            [readonly]="isEditMode"
+            [readonly]="true"
             #id="ngModel"
           ></app-input>
         </app-form-field>
@@ -146,7 +145,7 @@ export class PlayerFormComponent implements OnInit {
   @ViewChild('playerForm') playerForm!: NgForm;
 
   player: Player = {
-    id: '',
+    id: Date.now().toString(),
     name: '',
     roles: [],
     status: 'playing',
