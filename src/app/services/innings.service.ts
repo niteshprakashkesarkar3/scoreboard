@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Innings } from '../models/innings.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class InningsService {
   public innings$ = this.inningsSubject.asObservable();
   private readonly STORAGE_KEY = 'innings';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadInnings();
   }
 
   private loadInnings(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const innings = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyInnings();
+      const innings = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       this.inningsSubject.next(innings);
     } catch (error) {
       console.error('Error loading innings:', error);

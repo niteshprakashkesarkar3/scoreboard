@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Ball } from '../models/ball.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class BallService {
   public balls$ = this.ballsSubject.asObservable();
   private readonly STORAGE_KEY = 'balls';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadBalls();
   }
 
   private loadBalls(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const balls = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyBalls();
+      const balls = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       
       // Convert string dates back to Date objects
       balls.forEach((b: Ball) => {

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Group } from '../models/group.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class GroupService {
   public groups$ = this.groupsSubject.asObservable();
   private readonly STORAGE_KEY = 'groups';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadGroups();
   }
 
   private loadGroups(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const groups = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyGroups();
+      const groups = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       this.groupsSubject.next(groups);
     } catch (error) {
       console.error('Error loading groups:', error);

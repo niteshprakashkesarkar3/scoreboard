@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Stadium } from '../models/stadium.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class StadiumService {
   public stadiums$ = this.stadiumsSubject.asObservable();
   private readonly STORAGE_KEY = 'stadiums';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadStadiums();
   }
 
   private loadStadiums(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const stadiums = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyStadiums();
+      const stadiums = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       this.stadiumsSubject.next(stadiums);
     } catch (error) {
       console.error('Error loading stadiums:', error);

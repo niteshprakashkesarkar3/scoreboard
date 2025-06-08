@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Tournament } from '../models/tournament.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class TournamentService {
   public tournaments$ = this.tournamentsSubject.asObservable();
   private readonly STORAGE_KEY = 'tournaments';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadTournaments();
   }
 
   private loadTournaments(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const tournaments = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyTournaments();
+      const tournaments = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       
       // Convert string dates back to Date objects
       tournaments.forEach((t: Tournament) => {

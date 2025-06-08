@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Team } from '../models/team.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class TeamService {
   public teams$ = this.teamsSubject.asObservable();
   private readonly STORAGE_KEY = 'teams';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadTeams();
   }
 
   private loadTeams(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const teams = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyTeams();
+      const teams = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       this.teamsSubject.next(teams);
     } catch (error) {
       console.error('Error loading teams:', error);

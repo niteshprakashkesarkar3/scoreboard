@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Match } from '../models/match.model';
+import { FallbackDataService } from './fallback-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,14 @@ export class MatchService {
   public matches$ = this.matchesSubject.asObservable();
   private readonly STORAGE_KEY = 'matches';
 
-  constructor() {
+  constructor(private fallbackDataService: FallbackDataService) {
     this.loadMatches();
   }
 
   private loadMatches(): void {
     try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      const matches = data ? JSON.parse(data) : [];
+      const dummyData = this.fallbackDataService.getDummyMatches();
+      const matches = this.fallbackDataService.initializeDataIfEmpty(this.STORAGE_KEY, dummyData);
       
       // Convert string dates back to Date objects and ensure status is set
       matches.forEach((m: Match) => {
@@ -39,7 +40,6 @@ export class MatchService {
         ...match,
         status: match.status || 'scheduled'
       }));
-      console.log('saveMatches', matchesWithStatus);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(matchesWithStatus));
       this.matchesSubject.next(matchesWithStatus);
     } catch (error) {
@@ -62,7 +62,6 @@ export class MatchService {
         status: match.status || 'scheduled'
       } : m
     );
-      console.log('maches', matches)
     this.saveMatches(matches);
   }
 
