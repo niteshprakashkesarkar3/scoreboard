@@ -465,7 +465,7 @@ export class FallbackDataService {
         total_overs: 20,
         toss_winner_id: '1700000030000',
         toss_decision: 'bat',
-        status: 'in_progress'
+        status: 'completed'
       },
       {
         id: '1700000050001',
@@ -497,59 +497,440 @@ export class FallbackDataService {
         match_id: '1700000050000',
         batting_team_id: '1700000030000',
         bowling_team_id: '1700000031000',
-        total_runs: 85,
-        wickets: 3,
-        overs: 12.4,
+        total_runs: 185,
+        wickets: 6,
+        overs: 20.0,
         extras: {
-          wides: 4,
+          wides: 8,
+          no_balls: 3,
+          byes: 2,
+          leg_byes: 5
+        },
+        status: 'completed'
+      },
+      {
+        id: '1700000050000_2nd',
+        match_id: '1700000050000',
+        batting_team_id: '1700000031000',
+        bowling_team_id: '1700000030000',
+        total_runs: 178,
+        wickets: 8,
+        overs: 20.0,
+        extras: {
+          wides: 6,
           no_balls: 2,
           byes: 1,
           leg_byes: 3
         },
-        status: 'in_progress'
+        status: 'completed'
       }
     ];
   }
 
   getDummyBalls(): Ball[] {
-    return [
-      {
-        id: '1700000050000_1st_0_1',
-        innings_id: '1700000050000_1st',
-        over_number: 0,
-        ball_number: 1,
-        batsman_id: '1700000040000',
-        bowler_id: '1700000041004',
-        runs: 1,
-        extras: 0,
-        outcome: 'regular',
-        timestamp: new Date('2024-01-20T14:35:00')
-      },
-      {
-        id: '1700000050000_1st_0_2',
-        innings_id: '1700000050000_1st',
-        over_number: 0,
-        ball_number: 2,
-        batsman_id: '1700000040003',
-        bowler_id: '1700000041004',
-        runs: 4,
-        extras: 0,
-        outcome: 'regular',
-        timestamp: new Date('2024-01-20T14:36:00')
-      },
-      {
-        id: '1700000050000_1st_0_3',
-        innings_id: '1700000050000_1st',
-        over_number: 0,
-        ball_number: 3,
-        batsman_id: '1700000040003',
-        bowler_id: '1700000041004',
-        runs: 0,
-        extras: 0,
-        outcome: 'regular',
-        timestamp: new Date('2024-01-20T14:37:00')
-      }
+    const balls: Ball[] = [];
+    let ballId = 1700000060000;
+
+    // First Innings - Mumbai Indians batting
+    const miInnings = [
+      // Over 1 - Deepak Chahar bowling
+      { batsman: '1700000040000', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040000', bowler: '1700000041004', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040000', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041004', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 2 - Josh Hazlewood bowling
+      { batsman: '1700000040000', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040000', bowler: '1700000041009', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040000', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000041002' },
+      { batsman: '1700000040004', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041009', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 3 - Deepak Chahar bowling
+      { batsman: '1700000040003', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041004', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041004', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000040004', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041004', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 4 - Shardul Thakur bowling
+      { batsman: '1700000040003', bowler: '1700000041008', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041008', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041008', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041008', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 5 - Ravindra Jadeja bowling
+      { batsman: '1700000040003', bowler: '1700000041001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041001', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041001', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041001', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 6 - Moeen Ali bowling
+      { batsman: '1700000040003', bowler: '1700000041005', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041005', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041005', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040004', bowler: '1700000041005', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'lbw' },
+      { batsman: '1700000040002', bowler: '1700000041005', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041005', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 7 - Ravindra Jadeja bowling
+      { batsman: '1700000040003', bowler: '1700000041001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041001', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041001', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041001', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 8 - Dwayne Bravo bowling
+      { batsman: '1700000040003', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040003', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000041000' },
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 9 - Moeen Ali bowling
+      { batsman: '1700000040002', bowler: '1700000041005', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041005', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041005', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041005', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041005', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041005', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 10 - Shardul Thakur bowling
+      { batsman: '1700000040002', bowler: '1700000041008', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041008', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041008', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000040005', bowler: '1700000041008', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041008', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 11 - Josh Hazlewood bowling
+      { batsman: '1700000040005', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041009', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040002', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'bowled' },
+      { batsman: '1700000040007', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 12 - Dwayne Bravo bowling
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041006', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041006', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 13 - Deepak Chahar bowling
+      { batsman: '1700000040005', bowler: '1700000041004', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040005', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000041001' },
+      { batsman: '1700000040008', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041004', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 14 - Shardul Thakur bowling
+      { batsman: '1700000040007', bowler: '1700000041008', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 15 - Josh Hazlewood bowling
+      { batsman: '1700000040007', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 16 - Dwayne Bravo bowling
+      { batsman: '1700000040007', bowler: '1700000041006', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040007', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000041005' },
+      { batsman: '1700000040009', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041006', runs: 4, extras: 0, outcome: 'regular' },
+
+      // Over 17 - Shardul Thakur bowling
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000040008', bowler: '1700000041008', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041008', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041008', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 18 - Josh Hazlewood bowling
+      { batsman: '1700000040009', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041009', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 19 - Dwayne Bravo bowling
+      { batsman: '1700000040009', bowler: '1700000041006', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041006', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000040008', bowler: '1700000041006', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040008', bowler: '1700000041006', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 20 - Deepak Chahar bowling
+      { batsman: '1700000040008', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041004', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041004', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041004', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041004', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000040009', bowler: '1700000041004', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000040009', bowler: '1700000041004', runs: 1, extras: 0, outcome: 'regular' }
     ];
+
+    // Second Innings - Chennai Super Kings batting
+    const cskInnings = [
+      // Over 1 - Jasprit Bumrah bowling
+      { batsman: '1700000041003', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041002', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041002', bowler: '1700000040001', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041002', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041002', bowler: '1700000040001', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 2 - Trent Boult bowling
+      { batsman: '1700000041002', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041002', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000040000' },
+      { batsman: '1700000041007', bowler: '1700000040006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040006', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040006', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 3 - Jasprit Bumrah bowling
+      { batsman: '1700000041007', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040001', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040001', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000041007', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040001', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 4 - Nathan Coulter-Nile bowling
+      { batsman: '1700000041003', bowler: '1700000040010', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040010', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040010', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040010', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 5 - Krunal Pandya bowling
+      { batsman: '1700000041003', bowler: '1700000040007', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040007', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040007', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040007', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040007', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040007', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 6 - Rahul Chahar bowling
+      { batsman: '1700000041003', bowler: '1700000040009', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041007', bowler: '1700000040009', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'stumped', fielder_id: '1700000040003' },
+      { batsman: '1700000041005', bowler: '1700000040009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040009', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 7 - Krunal Pandya bowling
+      { batsman: '1700000041003', bowler: '1700000040007', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040007', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040007', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040007', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040007', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040007', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 8 - Hardik Pandya bowling
+      { batsman: '1700000041003', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041003', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000040005' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 9 - Rahul Chahar bowling
+      { batsman: '1700000041005', bowler: '1700000040009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040009', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040009', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040009', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040009', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040009', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 10 - Hardik Pandya bowling
+      { batsman: '1700000041005', bowler: '1700000040002', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040002', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 11 - Jasprit Bumrah bowling
+      { batsman: '1700000041000', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040001', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041005', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'bowled' },
+      { batsman: '1700000041001', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 12 - Nathan Coulter-Nile bowling
+      { batsman: '1700000041000', bowler: '1700000040010', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040010', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040010', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040010', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 13 - Trent Boult bowling
+      { batsman: '1700000041000', bowler: '1700000040006', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041000', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000040002' },
+      { batsman: '1700000041006', bowler: '1700000040006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040006', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 14 - Hardik Pandya bowling
+      { batsman: '1700000041001', bowler: '1700000040002', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040002', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040002', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040002', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000041006', bowler: '1700000040002', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040002', runs: 0, extras: 0, outcome: 'regular' },
+
+      // Over 15 - Jasprit Bumrah bowling
+      { batsman: '1700000041001', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 16 - Nathan Coulter-Nile bowling
+      { batsman: '1700000041001', bowler: '1700000040010', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041001', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000040007' },
+      { batsman: '1700000041008', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040010', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040010', runs: 4, extras: 0, outcome: 'regular' },
+
+      // Over 17 - Trent Boult bowling
+      { batsman: '1700000041006', bowler: '1700000040006', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040006', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040006', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000041006', bowler: '1700000040006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040006', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 18 - Jasprit Bumrah bowling
+      { batsman: '1700000041008', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040001', runs: 1, extras: 0, outcome: 'regular' },
+
+      // Over 19 - Nathan Coulter-Nile bowling
+      { batsman: '1700000041008', bowler: '1700000040010', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040010', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040010', runs: 0, extras: 1, outcome: 'wide' },
+      { batsman: '1700000041006', bowler: '1700000040010', runs: 4, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041006', bowler: '1700000040010', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'run_out', fielder_id: '1700000040003' },
+      { batsman: '1700000041004', bowler: '1700000040010', runs: 2, extras: 0, outcome: 'regular' },
+
+      // Over 20 - Trent Boult bowling
+      { batsman: '1700000041004', bowler: '1700000040006', runs: 1, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040006', runs: 6, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040006', runs: 2, extras: 0, outcome: 'regular' },
+      { batsman: '1700000041008', bowler: '1700000040006', runs: 0, extras: 0, outcome: 'wicket', wicket_type: 'caught', fielder_id: '1700000040000' },
+      { batsman: '1700000041009', bowler: '1700000040006', runs: 1, extras: 0, outcome: 'regular' }
+    ];
+
+    // Generate ball data for first innings
+    let overNumber = 0;
+    let ballNumber = 1;
+    let timestamp = new Date('2024-01-20T14:35:00');
+
+    miInnings.forEach((ballData, index) => {
+      if (ballNumber > 6 && ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
+        overNumber++;
+        ballNumber = 1;
+      }
+
+      balls.push({
+        id: (ballId++).toString(),
+        innings_id: '1700000050000_1st',
+        over_number: overNumber,
+        ball_number: ballNumber,
+        batsman_id: ballData.batsman,
+        bowler_id: ballData.bowler,
+        runs: ballData.runs,
+        extras: ballData.extras,
+        outcome: ballData.outcome,
+        wicket_type: ballData.wicket_type,
+        fielder_id: ballData.fielder_id,
+        timestamp: new Date(timestamp.getTime() + index * 30000) // 30 seconds between balls
+      });
+
+      if (ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
+        ballNumber++;
+      }
+    });
+
+    // Generate ball data for second innings
+    overNumber = 0;
+    ballNumber = 1;
+    timestamp = new Date('2024-01-20T17:00:00'); // Second innings starts later
+
+    cskInnings.forEach((ballData, index) => {
+      if (ballNumber > 6 && ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
+        overNumber++;
+        ballNumber = 1;
+      }
+
+      balls.push({
+        id: (ballId++).toString(),
+        innings_id: '1700000050000_2nd',
+        over_number: overNumber,
+        ball_number: ballNumber,
+        batsman_id: ballData.batsman,
+        bowler_id: ballData.bowler,
+        runs: ballData.runs,
+        extras: ballData.extras,
+        outcome: ballData.outcome,
+        wicket_type: ballData.wicket_type,
+        fielder_id: ballData.fielder_id,
+        timestamp: new Date(timestamp.getTime() + index * 30000)
+      });
+
+      if (ballData.outcome !== 'wide' && ballData.outcome !== 'no_ball') {
+        ballNumber++;
+      }
+    });
+
+    return balls;
   }
 
   initializeDataIfEmpty(storageKey: string, dummyData: any[]): any[] {
