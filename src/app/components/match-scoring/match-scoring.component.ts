@@ -22,20 +22,48 @@ import { ButtonComponent } from '../shared/button/button.component';
         <p class="match-info">
           {{ match.total_overs ?? 20 }} Overs Match
           <span class="separator">|</span>
-          Toss: {{ getTeamName(match.toss_winner_id ?? '') }} chose to {{ match.toss_decision }}
+          <span *ngIf="match.toss_winner_id">
+            Toss: {{ getTeamName(match.toss_winner_id) }} chose to {{ match.toss_decision }}
+          </span>
         </p>
+      </div>
+
+      <!-- Match Results (when completed) -->
+      <div class="match-results" *ngIf="match.status === 'completed' && matchInnings.length === 2">
+        <h3>Match Result</h3>
+        <div class="result-summary">
+          <div class="team-score">
+            <h4>{{ getTeamName(matchInnings[0].batting_team_id) }}</h4>
+            <span class="score">{{ matchInnings[0].total_runs }}/{{ matchInnings[0].wickets }}</span>
+            <span class="overs">({{ matchInnings[0].overs | number:'1.1-1' }} ov)</span>
+          </div>
+          <div class="vs">vs</div>
+          <div class="team-score">
+            <h4>{{ getTeamName(matchInnings[1].batting_team_id) }}</h4>
+            <span class="score">{{ matchInnings[1].total_runs }}/{{ matchInnings[1].wickets }}</span>
+            <span class="overs">({{ matchInnings[1].overs | number:'1.1-1' }} ov)</span>
+          </div>
+        </div>
+        <div class="winner-announcement">
+          <h3>{{ getMatchWinner() }}</h3>
+        </div>
       </div>
 
       <div class="innings-cards"> 
         <div class="innings-card" *ngFor="let innings of matchInnings">
           <div class="innings-header">
-            <h3>{{ getTeamName(innings.batting_team_id) }}</h3>
+            <h3>{{ getTeamName(innings.batting_team_id) }} {{ getInningsLabel(innings) }}</h3>
             <span class="score">
               {{ innings.total_runs }}/{{ innings.wickets }}
               ({{ innings.overs | number:'1.1-1' }} ov)
             </span>
           </div>
-          <div class="innings-actions">
+          <div class="innings-status">
+            <span class="status-badge" [class]="innings.status">
+              {{ innings.status | titlecase }}
+            </span>
+          </div>
+          <div class="innings-actions" *ngIf="match.status !== 'completed'">
             <app-button 
               variant="primary" 
               (onClick)="continueInnings(innings)"
@@ -53,7 +81,7 @@ import { ButtonComponent } from '../shared/button/button.component';
         </div>
       </div>
 
-      <div class="match-actions" *ngIf="!hasInProgressInnings">
+      <div class="match-actions" *ngIf="!hasInProgressInnings && match.status !== 'completed'">
         <app-button
           variant="primary"
           (onClick)="startNewInnings()"
@@ -61,12 +89,20 @@ import { ButtonComponent } from '../shared/button/button.component';
         >
           Start {{ matchInnings.length === 0 ? 'First' : 'Second' }} Innings
         </app-button>
+      </div>
+
+      <div class="completed-match-actions" *ngIf="match.status === 'completed'">
         <app-button
           variant="secondary"
-          (onClick)="endMatch()"
-          *ngIf="matchInnings.length === 2"
+          (onClick)="goBackToMatches()"
         >
-          End Match
+          Back to Matches
+        </app-button>
+        <app-button
+          variant="danger"
+          (onClick)="resetMatch()"
+        >
+          Reset Match
         </app-button>
       </div>
     </div>
@@ -96,6 +132,69 @@ import { ButtonComponent } from '../shared/button/button.component';
 
     .separator {
       margin: 0 0.5rem;
+    }
+
+    .match-results {
+      margin-bottom: 2rem;
+      padding: 2rem;
+      background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+      border-radius: 8px;
+      border: 2px solid #4caf50;
+    }
+
+    .match-results h3 {
+      text-align: center;
+      color: #1B5E20;
+      margin-bottom: 1.5rem;
+    }
+
+    .result-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .team-score {
+      text-align: center;
+      flex: 1;
+    }
+
+    .team-score h4 {
+      margin: 0 0 0.5rem;
+      color: #1B5E20;
+    }
+
+    .team-score .score {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .team-score .overs {
+      display: block;
+      color: #666;
+      margin-top: 0.25rem;
+    }
+
+    .vs {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #666;
+      margin: 0 1rem;
+    }
+
+    .winner-announcement {
+      text-align: center;
+      padding: 1rem;
+      background: #4caf50;
+      color: white;
+      border-radius: 4px;
+    }
+
+    .winner-announcement h3 {
+      margin: 0;
+      color: white;
     }
 
     .innings-cards {
@@ -128,12 +227,40 @@ import { ButtonComponent } from '../shared/button/button.component';
       font-weight: bold;
     }
 
+    .innings-status {
+      margin-bottom: 1rem;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      text-transform: capitalize;
+    }
+
+    .status-badge.not_started {
+      background-color: #f5f5f5;
+      color: #666;
+    }
+
+    .status-badge.in_progress {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.completed {
+      background-color: #c8e6c9;
+      color: #2e7d32;
+    }
+
     .innings-actions {
       display: flex;
       gap: 1rem;
     }
 
-    .match-actions {
+    .match-actions,
+    .completed-match-actions {
       display: flex;
       justify-content: center;
       gap: 1rem;
@@ -150,6 +277,15 @@ import { ButtonComponent } from '../shared/button/button.component';
 
       .innings-actions {
         flex-direction: column;
+      }
+
+      .result-summary {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .vs {
+        margin: 0;
       }
     }
   `]
@@ -208,6 +344,31 @@ export class MatchScoringComponent implements OnInit {
     this.matchInnings = this.inningsService.getInningsByMatch(this.match.id);
   }
 
+  getInningsLabel(innings: Innings): string {
+    return innings.id.endsWith('_1st') ? '(1st Innings)' : '(2nd Innings)';
+  }
+
+  getMatchWinner(): string {
+    if (this.matchInnings.length !== 2) return '';
+    
+    const firstInnings = this.matchInnings.find(i => i.id.endsWith('_1st'));
+    const secondInnings = this.matchInnings.find(i => i.id.endsWith('_2nd'));
+    
+    if (!firstInnings || !secondInnings) return '';
+
+    const team1Score = firstInnings.total_runs;
+    const team2Score = secondInnings.total_runs;
+    
+    if (team2Score > team1Score) {
+      const wicketsRemaining = 10 - secondInnings.wickets;
+      const ballsRemaining = (this.match.total_overs! * 6) - (Math.floor(secondInnings.overs) * 6 + Math.round((secondInnings.overs % 1) * 6));
+      return `${this.getTeamName(secondInnings.batting_team_id)} won by ${wicketsRemaining} wickets (${ballsRemaining} balls remaining)`;
+    } else {
+      const runsMargin = team1Score - team2Score;
+      return `${this.getTeamName(firstInnings.batting_team_id)} won by ${runsMargin} runs`;
+    }
+  }
+
   get hasInProgressInnings(): boolean {
     return this.matchInnings.some(i => i.status === 'in_progress');
   }
@@ -218,12 +379,6 @@ export class MatchScoringComponent implements OnInit {
 
   clearInnings(innings: Innings): void {
     if (confirm('Are you sure you want to clear this innings? All scoring data will be lost.')) {
-      // Reset match status to scheduled
-      this.match.status = 'scheduled';
-      this.match.toss_winner_id = '';
-      this.match.toss_decision = 'bat';
-      this.matchService.updateMatch(this.match);
-
       // Clear all balls for this innings
       const balls = this.ballService.getBallsByInnings(innings.id);
       balls.forEach(ball => {
@@ -233,8 +388,16 @@ export class MatchScoringComponent implements OnInit {
       // Remove the innings
       this.inningsService.deleteInnings(innings.id);
 
-      // Navigate back to match setup
-      this.router.navigate(['/matches', this.match.id, 'setup']);
+      // If this was the only innings, reset match status
+      if (this.matchInnings.length === 1) {
+        this.match.status = 'scheduled';
+        this.match.toss_winner_id = '';
+        this.match.toss_decision = 'bat';
+        this.matchService.updateMatch(this.match);
+        this.router.navigate(['/matches', this.match.id, 'setup']);
+      } else {
+        this.loadInnings();
+      }
     }
   }
 
@@ -273,9 +436,29 @@ export class MatchScoringComponent implements OnInit {
     return teamId === this.match.team1_id ? this.match.team2_id : this.match.team1_id;
   }
 
-  endMatch(): void {
-    this.match.status = 'completed';
-    this.matchService.updateMatch(this.match);
+  goBackToMatches(): void {
     this.router.navigate(['/matches']);
+  }
+
+  resetMatch(): void {
+    if (confirm('Are you sure you want to reset this entire match? All data will be lost.')) {
+      // Clear all innings and balls
+      this.matchInnings.forEach(innings => {
+        const balls = this.ballService.getBallsByInnings(innings.id);
+        balls.forEach(ball => {
+          this.ballService.deleteBall(ball.id);
+        });
+        this.inningsService.deleteInnings(innings.id);
+      });
+
+      // Reset match status
+      this.match.status = 'scheduled';
+      this.match.toss_winner_id = '';
+      this.match.toss_decision = 'bat';
+      this.matchService.updateMatch(this.match);
+
+      // Navigate to match setup
+      this.router.navigate(['/matches', this.match.id, 'setup']);
+    }
   }
 }

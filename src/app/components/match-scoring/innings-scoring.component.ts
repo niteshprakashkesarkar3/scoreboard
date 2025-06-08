@@ -6,10 +6,12 @@ import { Innings } from '../../models/innings.model';
 import { Ball, BallOutcome } from '../../models/ball.model';
 import { Player } from '../../models/player.model';
 import { Team } from '../../models/team.model';
+import { Match } from '../../models/match.model';
 import { InningsService } from '../../services/innings.service';
 import { BallService } from '../../services/ball.service';
 import { PlayerService } from '../../services/player.service';
 import { TeamService } from '../../services/team.service';
+import { MatchService } from '../../services/match.service';
 import { ButtonComponent } from '../shared/button/button.component';
 import { SelectComponent } from '../shared/select/select.component';
 import { WicketDialogComponent, WicketDetails } from './wicket-dialog.component';
@@ -58,11 +60,43 @@ interface OverStats {
   ],
   template: `
     <div class="innings-scoring-container" *ngIf="innings">
+      <!-- Innings Complete Dialog -->
+      <div class="dialog-overlay" *ngIf="showInningsCompleteDialog">
+        <div class="dialog-content">
+          <h3>{{ getInningsCompleteTitle() }}</h3>
+          <div class="innings-summary">
+            <p><strong>{{ getBattingTeamName() }}</strong></p>
+            <p class="score">{{ innings.total_runs }}/{{ innings.wickets }} ({{ getFormattedOvers() }} overs)</p>
+            <p *ngIf="isFirstInnings()">Target: {{ innings.total_runs + 1 }} runs</p>
+            <p *ngIf="!isFirstInnings()">{{ getMatchResult() }}</p>
+          </div>
+          <div class="dialog-actions">
+            <app-button 
+              variant="primary" 
+              (onClick)="handleInningsComplete()"
+              *ngIf="isFirstInnings()"
+            >
+              Start Second Innings
+            </app-button>
+            <app-button 
+              variant="primary" 
+              (onClick)="viewMatchResults()"
+              *ngIf="!isFirstInnings()"
+            >
+              View Match Results
+            </app-button>
+          </div>
+        </div>
+      </div>
+
       <div class="scoring-header">
-        <h2>{{ getBattingTeamName() }} Innings</h2>
+        <h2>{{ getBattingTeamName() }} Innings {{ isFirstInnings() ? '(1st)' : '(2nd)' }}</h2>
         <div class="score-summary">
           <span class="total-score">{{ innings.total_runs }}/{{ innings.wickets }}</span>
           <span class="overs">{{ getFormattedOvers() }} overs</span>
+          <span class="target" *ngIf="!isFirstInnings() && targetRuns > 0">
+            Target: {{ targetRuns }} (Need {{ targetRuns - innings.total_runs }} runs)
+          </span>
         </div>
       </div>
 
@@ -81,7 +115,7 @@ interface OverStats {
           </thead>
           <tbody>
             <tr *ngFor="let batsman of getBatsmanStats()">
-              <td>{{ batsman.name }}{{ batsman.isStriker ? '*' : '' }}</td>
+              <td class="team-name">{{ batsman.name }}{{ batsman.isStriker ? '*' : '' }}</td>
               <td>{{ batsman.runs }}</td>
               <td>{{ batsman.balls }}</td>
               <td>{{ batsman.fours }}</td>
@@ -107,7 +141,7 @@ interface OverStats {
           </thead>
           <tbody>
             <tr *ngFor="let bowler of getBowlerStats()">
-              <td>{{ bowler.name }}</td>
+              <td class="team-name">{{ bowler.name }}</td>
               <td>{{ getFormattedOvers(bowler.overs) }}</td>
               <td>{{ bowler.maidens }}</td>
               <td>{{ bowler.runs }}</td>
@@ -143,7 +177,7 @@ interface OverStats {
         </div>
       </div>
 
-      <div class="scoring-controls">
+      <div class="scoring-controls" *ngIf="!isInningsComplete()">
         <div class="batsman-bowler">
           <div class="player-select">
             <label>Striker</label>
@@ -219,6 +253,14 @@ interface OverStats {
           </app-button>
         </div>
       </div>
+
+      <div class="innings-complete-message" *ngIf="isInningsComplete()">
+        <h3>{{ getInningsCompleteTitle() }}</h3>
+        <p>{{ getBattingTeamName() }}: {{ innings.total_runs }}/{{ innings.wickets }} ({{ getFormattedOvers() }} overs)</p>
+        <app-button variant="primary" (onClick)="showInningsCompleteDialog = true">
+          {{ isFirstInnings() ? 'Start Second Innings' : 'View Match Results' }}
+        </app-button>
+      </div>
     </div>
 
     <app-wicket-dialog
@@ -246,6 +288,50 @@ interface OverStats {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
+    .dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .dialog-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .innings-summary {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .innings-summary .score {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1B5E20;
+      margin: 0.5rem 0;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
     .scoring-header {
       display: flex;
       justify-content: space-between;
@@ -267,6 +353,14 @@ interface OverStats {
       font-size: 1.25rem;
       color: #666;
       margin-left: 1rem;
+    }
+
+    .target {
+      font-size: 1rem;
+      color: #d32f2f;
+      font-weight: bold;
+      display: block;
+      margin-top: 0.5rem;
     }
 
     .batting-stats,
@@ -394,6 +488,19 @@ interface OverStats {
       margin-top: 1rem;
     }
 
+    .innings-complete-message {
+      text-align: center;
+      padding: 2rem;
+      background: #e8f5e8;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+
+    .innings-complete-message h3 {
+      color: #1B5E20;
+      margin-bottom: 1rem;
+    }
+
     @media (max-width: 768px) {
       .innings-scoring-container {
         padding: 1rem;
@@ -416,6 +523,7 @@ interface OverStats {
 })
 export class InningsScoringComponent implements OnInit {
   innings!: Innings;
+  match!: Match;
   currentOver = 0;
   currentOverBalls: Ball[] = [];
   currentBatsman = '';
@@ -425,15 +533,18 @@ export class InningsScoringComponent implements OnInit {
   availableBowlers: Player[] = [];
   showingWicketDialog = false;
   showingRetireDialog = false;
+  showInningsCompleteDialog = false;
   teams: Team[] = [];
   matchInnings: Innings[] = [];
   retiredPlayers: string[] = [];
+  targetRuns = 0;
 
   constructor(
     private inningsService: InningsService,
     private ballService: BallService,
     private playerService: PlayerService,
     private teamService: TeamService,
+    private matchService: MatchService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -446,12 +557,14 @@ export class InningsScoringComponent implements OnInit {
       return;
     }
 
+    this.loadMatch(matchId);
     this.loadInnings();
     const innings = this.inningsService.getInningsByMatch(matchId).find(i => i.id === inningsId);
     if (innings) {
       this.innings = innings;
       this.loadCurrentOver();
       this.loadPlayers();
+      this.calculateTarget();
     } else {
       this.router.navigate(['/matches']);
       return;
@@ -460,6 +573,118 @@ export class InningsScoringComponent implements OnInit {
     this.teamService.teams$.subscribe(teams => {
       this.teams = teams;
     });
+  }
+
+  private loadMatch(matchId: string): void {
+    this.matchService.matches$.subscribe(matches => {
+      const match = matches.find(m => m.id === matchId);
+      if (match) {
+        this.match = match;
+      }
+    });
+  }
+
+  private calculateTarget(): void {
+    if (!this.isFirstInnings()) {
+      const firstInnings = this.matchInnings.find(i => i.id.endsWith('_1st'));
+      if (firstInnings) {
+        this.targetRuns = firstInnings.total_runs + 1;
+      }
+    }
+  }
+
+  isFirstInnings(): boolean {
+    return this.innings.id.endsWith('_1st');
+  }
+
+  isInningsComplete(): boolean {
+    const totalOvers = this.match?.total_overs || 20;
+    const allOut = this.innings.wickets >= 10;
+    const oversComplete = this.innings.overs >= totalOvers;
+    const targetChased = !this.isFirstInnings() && this.innings.total_runs >= this.targetRuns;
+    
+    return allOut || oversComplete || targetChased;
+  }
+
+  getInningsCompleteTitle(): string {
+    if (this.isFirstInnings()) {
+      return 'First Innings Complete';
+    } else {
+      return 'Second Innings Complete';
+    }
+  }
+
+  getMatchResult(): string {
+    if (this.isFirstInnings()) return '';
+    
+    const firstInnings = this.matchInnings.find(i => i.id.endsWith('_1st'));
+    if (!firstInnings) return '';
+
+    const team1Score = firstInnings.total_runs;
+    const team2Score = this.innings.total_runs;
+    
+    if (team2Score >= this.targetRuns) {
+      const wicketsRemaining = 10 - this.innings.wickets;
+      const ballsRemaining = (this.match.total_overs! * 6) - (Math.floor(this.innings.overs) * 6 + Math.round((this.innings.overs % 1) * 6));
+      return `${this.getBattingTeamName()} won by ${wicketsRemaining} wickets (${ballsRemaining} balls remaining)`;
+    } else {
+      const runsMargin = team1Score - team2Score;
+      const firstInningsTeam = this.teams.find(t => t.id === firstInnings.batting_team_id)?.name || 'Team';
+      return `${firstInningsTeam} won by ${runsMargin} runs`;
+    }
+  }
+
+  handleInningsComplete(): void {
+    if (this.isFirstInnings()) {
+      // Mark first innings as completed
+      this.innings.status = 'completed';
+      this.inningsService.updateInnings(this.innings);
+      
+      // Start second innings
+      this.startSecondInnings();
+    } else {
+      // Mark second innings as completed and match as completed
+      this.innings.status = 'completed';
+      this.inningsService.updateInnings(this.innings);
+      
+      this.match.status = 'completed';
+      this.matchService.updateMatch(this.match);
+      
+      this.viewMatchResults();
+    }
+  }
+
+  private startSecondInnings(): void {
+    const battingTeamId = this.getOtherTeamId(this.innings.batting_team_id);
+    const bowlingTeamId = this.innings.batting_team_id;
+
+    const secondInnings: Innings = {
+      id: `${this.match.id}_2nd`,
+      match_id: this.match.id,
+      batting_team_id: battingTeamId,
+      bowling_team_id: bowlingTeamId,
+      total_runs: 0,
+      wickets: 0,
+      overs: 0,
+      extras: {
+        wides: 0,
+        no_balls: 0,
+        byes: 0,
+        leg_byes: 0
+      },
+      status: 'in_progress'
+    };
+
+    this.inningsService.addInnings(secondInnings);
+    this.router.navigate(['/matches', this.match.id, 'innings', secondInnings.id]);
+  }
+
+  private getOtherTeamId(teamId: string): string {
+    return teamId === this.match.team1_id ? this.match.team2_id : this.match.team1_id;
+  }
+
+  viewMatchResults(): void {
+    this.router.navigate(['/matches', this.match.id, 'scoring']);
   }
 
   getBatsmanStats(): BatsmanStats[] {
@@ -527,11 +752,9 @@ export class InningsScoringComponent implements OnInit {
         economy: 0
       };
 
-      // Update stats
       stats.runs += ball.runs + ball.extras;
       if (ball.outcome === 'wicket') stats.wickets++;
 
-      // Calculate valid balls for overs
       const validBalls = balls.filter(b => 
         b.bowler_id === bowler.id && 
         b.outcome !== 'wide' && 
@@ -539,14 +762,11 @@ export class InningsScoringComponent implements OnInit {
       ).length;
 
       stats.overs = Math.floor(validBalls / 6) + (validBalls % 6) / 6;
-
-      // Calculate economy
       stats.economy = stats.overs > 0 ? stats.runs / stats.overs : 0;
 
       bowlerStats.set(bowler.id, stats);
     });
 
-    // Calculate maidens
     Array.from(bowlerStats.values()).forEach(stats => {
       const bowlerBalls = balls.filter(b => b.bowler_id === stats.id);
       const overs = this.groupBallsByOver(bowlerBalls);
@@ -634,7 +854,6 @@ export class InningsScoringComponent implements OnInit {
         (p.roles.includes('Bowler') || p.roles.includes('All Rounder'))
       );
 
-    // Load initial player selections from match setup
     const setupData = localStorage.getItem('match_setup_' + this.innings.match_id);
     if (setupData) {
       const { striker_id, non_striker_id, opening_bowler_id } = JSON.parse(setupData);
@@ -688,10 +907,11 @@ export class InningsScoringComponent implements OnInit {
     this.updateInningsScore(runs);
     this.loadCurrentOver();
 
-    // Swap batsmen if odd number of runs
     if (runs % 2 === 1) {
       this.swapBatsmen();
     }
+
+    this.checkInningsComplete();
   }
 
   addExtra(type: BallOutcome): void {
@@ -722,6 +942,7 @@ export class InningsScoringComponent implements OnInit {
     }
     
     this.loadCurrentOver();
+    this.checkInningsComplete();
   }
 
   showWicketDialog(): void {
@@ -761,8 +982,8 @@ export class InningsScoringComponent implements OnInit {
     this.hideWicketDialog();
     this.loadCurrentOver();
     
-    // Clear out the dismissed batsman
     this.currentBatsman = '';
+    this.checkInningsComplete();
   }
 
   undoLastBall(): void {
@@ -786,8 +1007,8 @@ export class InningsScoringComponent implements OnInit {
       this.currentOver++;
       this.currentOverBalls = [];
       this.currentBowler = '';
-      // Swap batsmen at the end of the over
       this.swapBatsmen();
+      this.checkInningsComplete();
     }
   }
 
@@ -795,7 +1016,6 @@ export class InningsScoringComponent implements OnInit {
     if (!this.innings) return;
     this.innings.total_runs += runs;
 
-    // Calculate overs based on valid balls only
     const allBalls = this.ballService.getBallsByInnings(this.innings.id);
     const validBalls = allBalls.filter(ball => 
       ball.outcome !== 'wide' && ball.outcome !== 'no_ball'
@@ -803,6 +1023,12 @@ export class InningsScoringComponent implements OnInit {
 
     this.innings.overs = Math.floor(validBalls / 6) + (validBalls % 6) / 6;
     this.inningsService.updateInnings(this.innings);
+  }
+
+  private checkInningsComplete(): void {
+    if (this.isInningsComplete()) {
+      this.showInningsCompleteDialog = true;
+    }
   }
 
   getValidBallsInCurrentOver(): number {
